@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Intensube</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #f5f1e8; --bg2: #ebe5d4;
+  --ink: #1a1814; --ink2: #4a463c; --ink3: #8a8372;
+  --accent: #c84b1a; --green: #2d6a4f; --red: #b71c1c;
+  --serif: 'EB Garamond', Georgia, serif;
+  --mono: 'JetBrains Mono', 'Courier New', monospace;
+}
+body { background: var(--bg); color: var(--ink); font-family: var(--serif); min-height: 100vh; }
+button, input { font-family: inherit; cursor: pointer; outline: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Páginas */
+.pg { display: none; padding: 32px 24px; max-width: 520px; margin: 0 auto; }
+.pg.on { display: block; }
+
+/* Tipografia */
+.mono { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--ink3); }
+h1 { font-size: 42px; font-weight: 900; letter-spacing: -0.04em; }
+h2 { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
+
+/* Botão voltar */
+.bv { background: none; border: none; display: flex; align-items: center; gap: 6px; color: var(--ink3); font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 24px; padding: 0; }
+
+/* Card de navegação */
+.nc { width: 100%; text-align: left; background: var(--bg); border: 2px solid var(--ink); padding: 20px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; transition: transform 0.15s, box-shadow 0.15s; }
+.nc:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--ink); }
+.nc .tag { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 0.1em; margin-bottom: 4px; }
+.nc .nm { font-size: 18px; font-weight: 700; }
+.nc .mt { font-family: var(--mono); font-size: 10px; color: var(--ink3); margin-top: 4px; }
+
+/* Seção card */
+.sc { background: var(--bg); border: 1px solid var(--ink); padding: 18px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background 0.15s; }
+.sc:hover { background: var(--bg2); }
+.sc-ic { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; border-radius: 2px; }
+
+/* Resumo */
+.rc { border: 1px solid var(--ink); padding: 16px; margin-bottom: 12px; }
+.rc .un { font-family: var(--mono); font-size: 9px; color: var(--ink3); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 4px; }
+.rc .nm { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+.rc .tx { font-size: 14.5px; color: var(--ink2); line-height: 1.65; margin-bottom: 10px; }
+.pk { font-family: var(--mono); font-size: 11px; color: var(--ink3); padding-left: 14px; position: relative; margin-bottom: 3px; line-height: 1.5; }
+.pk::before { content: '→'; position: absolute; left: 0; font-weight: 700; }
+
+/* Barra de progresso */
+.bar { height: 4px; background: var(--bg2); margin-bottom: 20px; overflow: hidden; }
+.bar-f { height: 100%; transition: width 0.3s; }
+
+/* Flashcard */
+.fc { border: 2px solid; min-height: 200px; padding: 26px 20px; cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; transition: all 0.2s; margin-bottom: 16px; }
+.fc-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.fc-btn { padding: 13px; font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; border: 2px solid; display: flex; align-items: center; justify-content: center; gap: 7px; }
+
+/* Exercício */
+.ex { border: 1px solid var(--ink); margin-bottom: 16px; overflow: hidden; }
+.ex-h { padding: 14px 16px; border-bottom: 1px solid var(--ink3); }
+.ex-tp { font-family: var(--mono); font-size: 9px; color: var(--ink3); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 6px; }
+.ex-q { font-size: 16px; font-weight: 700; line-height: 1.35; }
+.ex-opts { padding: 10px 12px; display: grid; gap: 6px; }
+.op { padding: 10px 12px; border: 1px solid var(--ink3); font-size: 14px; text-align: left; display: flex; gap: 10px; align-items: flex-start; background: var(--bg); transition: background 0.15s; width: 100%; }
+.op:hover:not(:disabled) { background: var(--bg2); }
+.op.ok { background: rgba(45,106,79,0.1) !important; border: 1.5px solid var(--green) !important; }
+.op.err { background: rgba(183,28,28,0.08) !important; border: 1.5px solid var(--red) !important; }
+.ex-exp { padding: 10px 14px 12px; border-top: 2px solid; }
+.ex-nav { display: flex; justify-content: space-between; gap: 10px; }
+.bn { border: 1px solid var(--ink3); padding: 9px 16px; font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; background: transparent; color: var(--ink3); }
+.bn.pr { background: var(--ink); color: white; border-color: var(--ink); }
+.bn:disabled { opacity: 0.3; }
+
+/* Script */
+.scard { border: 1px solid var(--ink); margin-bottom: 14px; }
+.sh { padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; color: white; }
+.sb-pre { padding: 14px; font-family: var(--mono); font-size: 11.5px; line-height: 1.7; white-space: pre-wrap; background: var(--bg); word-break: break-word; }
+
+/* Loading */
+.ld { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; gap: 14px; }
+.sp { width: 26px; height: 26px; border: 2px solid var(--ink3); border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; }
+
+/* Modal admin */
+.ov { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; align-items: center; justify-content: center; padding: 24px; }
+.ov.on { display: flex; }
+.md { background: var(--bg); border: 2px solid var(--ink); padding: 28px; width: 100%; max-width: 420px; }
+.md-inp { width: 100%; padding: 9px 11px; border: 1px solid var(--ink); background: var(--bg); color: var(--ink); font-size: 12px; font-family: var(--mono); outline: none; margin-top: 5px; margin-bottom: 12px; }
+
+/* Admin btn */
+.adm { position: fixed; bottom: 16px; right: 16px; background: transparent; border: 1px solid var(--ink3); padding: 6px 12px; font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink3); z-index: 50; }
+
+/* Resultado final */
+.res-wrap { text-align: center; padding: 32px 0; }
+.res-nota { font-size: 68px; font-weight: 900; line-height: 1; letter-spacing: -0.04em; margin-bottom: 6px; }
+</style>
+</head>
+<body>
+
+<!-- Modal Admin -->
+<div class="ov" id="ov">
+  <div class="md">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <strong style="font-size:18px">Configuração</strong>
+      <button onclick="fecharAdmin()" style="background:none;border:none;font-size:14px;color:var(--ink3)">✕</button>
+    </div>
+    <p style="font-size:14px;color:var(--ink2);line-height:1.5;margin-bottom:16px">Cole as credenciais do Supabase. Só precisas fazer uma vez.</p>
+    <div class="mono" style="margin-bottom:4px">URL do Supabase</div>
+    <input id="a-url" class="md-inp" placeholder="https://xxx.supabase.co" />
+    <div class="mono" style="margin-bottom:4px">Anon Key</div>
+    <input id="a-key" class="md-inp" placeholder="eyJhbGci..." />
+    <button onclick="salvarAdmin()" style="width:100%;background:var(--ink);color:white;border:none;padding:12px;font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.12em;display:flex;align-items:center;justify-content:center;gap:8px">
+      <span id="a-sp" class="sp" style="width:13px;height:13px;display:none;border-color:white;border-top-color:transparent"></span>
+      <span id="a-bt">🔌 Testar e Salvar</span>
+    </button>
+    <div id="a-msg" style="font-family:var(--mono);font-size:11px;margin-top:10px;line-height:1.5"></div>
+  </div>
+</div>
+
+<button class="adm" onclick="abrirAdmin()">⚙ Admin</button>
+
+<!-- Loading -->
+<div id="pg-load" class="ld">
+  <div class="sp"></div>
+  <div class="mono">A carregar...</div>
+</div>
+
+<!-- Sem conexão -->
+<div id="pg-off" style="display:none;padding:48px 24px;text-align:center;max-width:420px;margin:0 auto">
+  <h1 style="margin-bottom:24px">Intensube</h1>
+  <p style="font-size:15px;color:var(--ink2);line-height:1.5;margin-bottom:24px">O app ainda não está ligado à base de dados.</p>
+  <button onclick="abrirAdmin()" style="background:var(--ink);color:white;border:none;padding:13px 24px;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:0.15em">⚙ Configurar</button>
+</div>
+
+<!-- Início -->
+<div id="pg-inicio" class="pg" style="padding-top:48px">
+  <div style="text-align:center;margin-bottom:40px">
+    <h1 style="margin-bottom:6px">Intensube</h1>
+    <div class="mono">estude antes da aula</div>
+  </div>
+  <div class="mono" style="margin-bottom:12px">escolha o seu curso</div>
+  <div id="lista-cursos"></div>
+</div>
+
+<!-- Períodos -->
+<div id="pg-periodos" class="pg">
+  <button class="bv" onclick="ir('inicio')">← Voltar</button>
+  <h2 id="p-curso" style="margin-bottom:6px"></h2>
+  <p style="font-size:16px;color:var(--ink2);margin-bottom:24px">Qual período você está?</p>
+  <div id="lista-periodos"></div>
+</div>
+
+<!-- Disciplinas -->
+<div id="pg-disciplinas" class="pg">
+  <button class="bv" onclick="ir('periodos')">← Voltar</button>
+  <div id="d-bread" class="mono" style="margin-bottom:4px"></div>
+  <h2 style="margin-bottom:22px">O que quer estudar?</h2>
+  <div id="lista-discs"></div>
+</div>
+
+<!-- Menu disciplina -->
+<div id="pg-disc" class="pg">
+  <button class="bv" onclick="ir('disciplinas')">← Voltar</button>
+  <div id="disc-hdr" style="padding-left:14px;margin-bottom:30px"></div>
+  <div id="disc-secs"></div>
+</div>
+
+<!-- Resumos -->
+<div id="pg-resumos" class="pg">
+  <button class="bv" onclick="ir('disc')">← Voltar</button>
+  <h2 style="margin-bottom:20px">Resumos</h2>
+  <div id="resumos-lst"></div>
+</div>
+
+<!-- Flashcards -->
+<div id="pg-flash" class="pg">
+  <button class="bv" onclick="ir('disc')">← Sair</button>
+  <div id="flash-cnt"></div>
+</div>
+
+<!-- Exercícios -->
+<div id="pg-ex" class="pg" style="max-width:560px">
+  <button class="bv" onclick="ir('disc')">← Sair</button>
+  <div id="ex-cnt"></div>
+</div>
+
+<!-- Scripts -->
+<div id="pg-scripts" class="pg" style="max-width:560px">
+  <button class="bv" onclick="ir('disc')">← Voltar</button>
+  <h2 id="sc-titulo" style="margin-bottom:20px"></h2>
+  <div id="sc-lst"></div>
+</div>
+
+<script>
+// ============================================================
+// CONFIGURAÇÃO — cola aqui as tuas credenciais do Supabase
+// ============================================================
+const CONFIG_URL = 'https://dtcjamubwickzadgztot.supabase.co';
+const CONFIG_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0Y2phbXVid2lja3phZGd6dG90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3Mjg5OTAsImV4cCI6MjA5MjMwNDk5MH0.W9Pf3rbIo25xLcJX9R4h8IqqqIS8dCUrQOIOiPB1Rrs';
+// ============================================================
+
+// Estado
+let SB_URL = CONFIG_URL || localStorage.getItem('ib_url') || '';
+let SB_KEY = CONFIG_KEY !== 'COLA_AQUI_A_TUA_ANON_KEY' ? CONFIG_KEY : (localStorage.getItem('ib_key') || '');
+let discs = [], discAtual = null, cursoAtual = '', periodoAtual = '';
+let FC = [], fcI = 0, fcV = false, fcR = {};
+let EX = [], exI = 0, exR = {};
+
+// Init
+window.onload = () => {
+  document.getElementById('a-url').value = SB_URL;
+  document.getElementById('a-key').value = SB_KEY;
+  if (SB_URL && SB_KEY) carregar(); else show('off');
+};
+
+// Navegação
+function show(id) {
+  ['load','off','inicio','periodos','disciplinas','disc','resumos','flash','ex','scripts']
+    .forEach(p => {
+      const el = document.getElementById('pg-' + p);
+      if (el) el.style.display = 'none';
+    });
+  const el = document.getElementById('pg-' + id);
+  if (el) { el.style.display = 'block'; if (el.classList.contains('pg')) el.classList.add('on'); }
+}
+
+function ir(id) { show(id); window.scrollTo(0,0); }
+
+// Carregar disciplinas do Supabase
+async function carregar() {
+  show('load');
+  try {
+    const r = await fetch(`${SB_URL}/rest/v1/disciplinas?select=id,sigla,nome,curso,periodo,cor,docente,ch,json_data&order=nome.asc`, {
+      headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` }
+    });
+    const data = await r.json();
+    if (!Array.isArray(data)) { show('off'); return; }
+    discs = data;
+    renderInicio();
+    show('inicio');
+  } catch(e) { show('off'); }
+}
+
+// Início: lista de cursos
+function renderInicio() {
+  const cursos = [...new Map(discs.map(d => [d.curso, { id: d.curso, total: discs.filter(x => x.curso === d.curso).length }])).values()];
+  document.getElementById('lista-cursos').innerHTML = cursos.map(c => `
+    <button class="nc" onclick="selCurso('${c.id}')">
+      <div><div class="tag" style="color:var(--accent)">${c.id}</div><div class="nm">${c.id}</div><div class="mt">${c.total} disciplina${c.total!==1?'s':''}</div></div>
+      <span style="font-size:22px;color:var(--ink3)">›</span>
+    </button>`).join('');
+}
+
+function selCurso(id) {
+  cursoAtual = id;
+  document.getElementById('p-curso').textContent = id;
+  const periodos = [...new Set(discs.filter(d => d.curso === id).map(d => d.periodo))].sort();
+  document.getElementById('lista-periodos').innerHTML = periodos.map(p => `
+    <button class="nc" onclick="selPeriodo('${p}')">
+      <div class="nm">${p}</div>
+      <span style="font-size:22px;color:var(--ink3)">›</span>
+    </button>`).join('');
+  ir('periodos');
+}
+
+function selPeriodo(p) {
+  periodoAtual = p;
+  document.getElementById('d-bread').textContent = `${cursoAtual} · ${p}`;
+  const lista = discs.filter(d => d.curso === cursoAtual && d.periodo === p);
+  document.getElementById('lista-discs').innerHTML = !lista.length
+    ? '<p style="color:var(--ink2);font-size:15px;text-align:center;padding:32px">Nenhuma disciplina disponível.</p>'
+    : lista.map(d => {
+        const jd = d.json_data || {};
+        const nT = jd.disciplina?.unidades?.reduce((a,u)=>a+u.topicos.length,0)||0;
+        const nF = (jd.flashcards||[]).length;
+        const nE = (jd.exercicios||[]).length;
+        return `<button class="nc" style="border-left:5px solid ${d.cor||'var(--accent)'}" onclick="abrirDisc('${d.id}')">
+          <div>
+            <div class="tag" style="color:${d.cor||'var(--accent)'}">${d.sigla} · ${d.ch||'?'}h</div>
+            <div class="nm">${d.nome}</div>
+            <div class="mt">${nT} resumos · ${nF} flashcards · ${nE} exercícios</div>
+          </div>
+          <span style="font-size:22px;color:var(--ink3)">›</span>
+        </button>`;
+      }).join('');
+  ir('disciplinas');
+}
+
+function abrirDisc(id) {
+  discAtual = discs.find(d => d.id === id);
+  if (!discAtual) return;
+  const d = discAtual, jd = d.json_data || {}, cor = d.cor || 'var(--accent)';
+  const nT = jd.disciplina?.unidades?.reduce((a,u)=>a+u.topicos.length,0)||0;
+  const nF = (jd.flashcards||[]).length;
+  const nE = (jd.exercicios||[]).length;
+  const nV = (jd.roteiro_video||[]).length;
+  const nP = (jd.podcast||[]).length;
+
+  document.getElementById('disc-hdr').innerHTML = `
+    <div style="border-left:5px solid ${cor};padding-left:14px">
+      <div style="font-family:var(--mono);font-size:10px;color:${cor};font-weight:700;letter-spacing:0.1em;margin-bottom:4px">${d.sigla}</div>
+      <div style="font-size:24px;font-weight:700;letter-spacing:-0.02em;line-height:1.15">${d.nome}</div>
+      ${d.docente?`<div style="font-family:var(--mono);font-size:10px;color:var(--ink3);margin-top:4px">Prof. ${d.docente}</div>`:''}
+    </div>`;
+
+  document.getElementById('disc-secs').innerHTML = [
+    { id:'resumos',    e:'📖', nm:'Resumos',    mt:`${nT} tópicos`,        c:'#3f5b7c' },
+    { id:'flashcards', e:'🃏', nm:'Flashcards', mt:`${nF} perguntas`,      c:'#8b6f4a' },
+    { id:'exercicios', e:'✏️', nm:'Exercícios', mt:`${nE} questões`,       c:'#2d6a4f' },
+    { id:'video',      e:'🎥', nm:'Roteiro',    mt:`${nV} vídeos`,          c:'#d97757' },
+    { id:'podcast',    e:'🎙', nm:'Podcast',    mt:`${nP} episódios`,       c:'#7b4f8e' },
+  ].map(s => `
+    <div class="sc" onclick="abrirSec('${s.id}')">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="sc-ic" style="background:${s.c}18">${s.e}</div>
+        <div><div style="font-size:18px;font-weight:700">${s.nm}</div><div style="font-family:var(--mono);font-size:10px;color:var(--ink3);margin-top:2px">${s.mt}</div></div>
+      </div>
+      <span style="font-size:22px;color:var(--ink3)">›</span>
+    </div>`).join('');
+  ir('disc');
+}
+
+// Abrir seção
+function abrirSec(id) {
+  const jd = discAtual?.json_data || {};
+  const cor = discAtual?.cor || 'var(--accent)';
+
+  if (id === 'resumos') {
+    const tops = jd.disciplina?.unidades?.flatMap(u=>u.topicos.map(t=>({...t,un:u.titulo})))||[];
+    document.getElementById('resumos-lst').innerHTML = tops.map(t=>`
+      <div class="rc" style="border-left:4px solid ${cor}">
+        <div class="un">${t.un||''}</div>
+        <div class="nm">${t.nome}</div>
+        <div class="tx">${t.resumo||''}</div>
+        ${(t.pontosChave||[]).map(p=>`<div class="pk" style="--c:${cor}">${p}</div>`).join('')}
+      </div>`).join('');
+    ir('resumos'); return;
+  }
+
+  if (id === 'flashcards') {
+    FC = jd.flashcards||[]; fcI=0; fcV=false; fcR={};
+    renderFC(); ir('flash'); return;
+  }
+
+  if (id === 'exercicios') {
+    EX = jd.exercicios||[]; exI=0; exR={};
+    renderEX(); ir('ex'); return;
+  }
+
+  if (id === 'video') {
+    document.getElementById('sc-titulo').textContent = 'Roteiro de Vídeo';
+    renderScripts(jd.roteiro_video||[], cor); ir('scripts'); return;
+  }
+
+  if (id === 'podcast') {
+    document.getElementById('sc-titulo').textContent = 'Podcast';
+    renderScripts(jd.podcast||[], cor); ir('scripts'); return;
+  }
+}
+
+// Flashcards
+function renderFC() {
+  const cor = discAtual?.cor||'var(--accent)';
+  const tot = FC.length, resp = Object.keys(fcR).length;
+  const ok = Object.values(fcR).filter(v=>v==='s').length;
+  if (!tot) { document.getElementById('flash-cnt').innerHTML='<p style="color:var(--ink2)">Nenhum flashcard.</p>'; return; }
+
+  if (resp===tot) {
+    const pct = Math.round(ok/tot*100);
+    const c = pct>=80?'var(--green)':pct>=50?'var(--accent)':'var(--red)';
+    document.getElementById('flash-cnt').innerHTML=`
+      <div class="res-wrap">
+        <div class="mono" style="margin-bottom:10px">resultado</div>
+        <div class="res-nota" style="color:${c}">${ok}<span style="font-size:28px;color:var(--ink3)">/${tot}</span></div>
+        <p style="font-size:17px;color:var(--ink2);margin:8px 0 24px">${pct>=80?'Excelente! Estás a dominar.':pct>=50?'Bom começo. Revisa os erros.':'Relê os resumos e tenta novamente.'}</p>
+        <button onclick="fcReset()" style="background:var(--ink);color:white;border:none;padding:13px 26px;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:0.15em;display:inline-flex;align-items:center;gap:8px;margin-bottom:12px">↺ Tentar novamente</button><br>
+        <button onclick="ir('disc')" style="background:transparent;color:var(--ink3);border:1px solid var(--ink3);padding:10px 22px;font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.15em;margin-top:8px">Voltar</button>
+      </div>`; return;
+  }
+
+  const fc = FC[fcI];
+  document.getElementById('flash-cnt').innerHTML=`
+    <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-family:var(--mono);font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:0.15em">
+      <span>${fcI+1} / ${tot}</span><span>${ok} ✓ · ${resp-ok} ✗</span>
+    </div>
+    <div class="bar"><div class="bar-f" style="width:${(resp/tot)*100}%;background:${cor}"></div></div>
+    <div class="fc" style="border-color:${cor};background:${fcV?cor:'var(--bg)'};color:${fcV?'white':'var(--ink)'}" onclick="fcVirar()">
+      <div style="font-family:var(--mono);font-size:8px;text-transform:uppercase;letter-spacing:0.2em;opacity:0.5;margin-bottom:14px">${fcV?'resposta':'pergunta'} · toque para virar</div>
+      <div style="font-size:${fcV?'16px':'19px'};font-weight:${fcV?400:700};line-height:1.4">${fcV?fc.v:fc.f}</div>
+    </div>
+    ${fcV?`<div class="fc-btns">
+      <button class="fc-btn" style="color:var(--red);border-color:var(--red);background:var(--bg)" onclick="fcResp('n')">✗ Não sabia</button>
+      <button class="fc-btn" style="color:white;border-color:${cor};background:${cor}" onclick="fcResp('s')">✓ Sabia!</button>
+    </div>`:`<div style="text-align:center;font-family:var(--mono);font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:0.15em">Pense antes de virar</div>`}`;
+}
+
+function fcVirar() { fcV=!fcV; renderFC(); }
+function fcResp(v) { fcR[fcI]=v; fcV=false; if(fcI<FC.length-1) fcI++; renderFC(); }
+function fcReset() { fcI=0; fcV=false; fcR={}; renderFC(); }
+
+// Exercícios
+function renderEX() {
+  const cor = discAtual?.cor||'var(--accent)';
+  const tot = EX.length;
+  if (!tot) { document.getElementById('ex-cnt').innerHTML='<p style="color:var(--ink2)">Nenhum exercício.</p>'; return; }
+
+  const resp = Object.keys(exR).length, ok = EX.filter((e,i)=>exR[i]===e.correta).length;
+  const ex = EX[exI], reu = exR[exI]!==undefined, ac = exR[exI]===ex?.correta;
+
+  const barra = `
+    <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-family:var(--mono);font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:0.15em">
+      <span>${exI+1} / ${tot}</span>
+      ${resp===tot?`<span style="color:${ok>=tot*.7?'var(--green)':'var(--accent)'}">${ok}/${tot} corretas</span>`:''}
+    </div>
+    <div class="bar" style="display:flex">
+      ${EX.map((_,i)=>{const r=exR[i],c=r===undefined?'transparent':r===EX[i].correta?'var(--green)':'var(--red)';return`<div style="flex:1;background:${c};transition:background 0.3s"></div>`;}).join('')}
+    </div>`;
+
+  const opts = (ex.opts||[]).map((o,oi)=>`
+    <button class="op ${reu&&oi===ex.correta?'ok':reu&&oi===exR[exI]&&oi!==ex.correta?'err':''}"
+      onclick="exResp(${oi})" ${reu?'disabled':''}>
+      <span style="font-family:var(--mono);font-size:9px;opacity:0.5;min-width:14px">${String.fromCharCode(65+oi)}</span>
+      <span style="flex:1">${o}</span>
+      ${reu&&oi===ex.correta?'<span style="margin-left:auto;color:var(--green)">✓</span>':''}
+      ${reu&&oi===exR[exI]&&oi!==ex.correta?'<span style="margin-left:auto;color:var(--red)">✗</span>':''}
+    </button>`).join('');
+
+  const exp = reu&&ex.exp?`
+    <div class="ex-exp" style="border-top-color:${ac?'var(--green)':'var(--red)'};background:${ac?'rgba(45,106,79,0.06)':'rgba(183,28,28,0.05)'}">
+      <div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.15em;font-weight:700;color:${ac?'var(--green)':'var(--red)'};display:flex;align-items:center;gap:7px;margin-bottom:5px">
+        ${ac?'✓ Correto!':`✗ Incorreto · Correta: ${String.fromCharCode(65+ex.correta)}`}
+      </div>
+      <div style="font-size:14px;line-height:1.6;color:var(--ink)">${ex.exp}</div>
+    </div>`:'' ;
+
+  document.getElementById('ex-cnt').innerHTML=`
+    ${barra}
+    <div class="ex">
+      <div class="ex-h">
+        ${ex.topico?`<div class="ex-tp">${ex.topico}</div>`:''}
+        <div class="ex-q">${ex.q}</div>
+      </div>
+      <div class="ex-opts">${opts}</div>
+      ${exp}
+    </div>
+    <div class="ex-nav">
+      <button class="bn" onclick="exNav(-1)" ${exI===0?'disabled':''}>← Anterior</button>
+      ${exI<tot-1?`<button class="bn pr" onclick="exNav(1)">Próxima →</button>`:resp===tot?`<button class="bn pr" onclick="exReset()">↺ Reiniciar</button>`:''}
+    </div>`;
+}
+
+function exResp(o) { if(exR[exI]!==undefined)return; exR[exI]=o; renderEX(); }
+function exNav(d) { exI=Math.max(0,Math.min(EX.length-1,exI+d)); renderEX(); }
+function exReset() { exI=0; exR={}; renderEX(); }
+
+// Scripts
+function renderScripts(itens, cor) {
+  document.getElementById('sc-lst').innerHTML = !itens.length
+    ? '<p style="color:var(--ink2)">Nenhum conteúdo disponível.</p>'
+    : itens.map((s,i)=>`
+        <div class="scard">
+          <div class="sh" style="background:${cor}">
+            <strong style="font-size:15px">${s.unidade}</strong>
+            <button onclick="cp('sc${i}')" style="border:1px solid rgba(255,255,255,0.3);background:transparent;color:white;padding:5px 12px;font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.12em">📋 Copiar</button>
+          </div>
+          <pre class="sb-pre" id="sc${i}">${esc(s.script)}</pre>
+        </div>`).join('');
+}
+
+function cp(id) { const el=document.getElementById(id); if(el) navigator.clipboard.writeText(el.textContent); }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// Admin
+function abrirAdmin() {
+  document.getElementById('a-url').value = SB_URL;
+  document.getElementById('a-key').value = SB_KEY;
+  document.getElementById('a-msg').textContent = '';
+  document.getElementById('ov').classList.add('on');
+}
+function fecharAdmin() { document.getElementById('ov').classList.remove('on'); }
+
+async function salvarAdmin() {
+  const url = document.getElementById('a-url').value.trim();
+  const key = document.getElementById('a-key').value.trim();
+  const msg = document.getElementById('a-msg');
+  const sp = document.getElementById('a-sp');
+  const bt = document.getElementById('a-bt');
+  if (!url||!key) { msg.textContent='Preenche os dois campos.'; msg.style.color='var(--red)'; return; }
+  sp.style.display='inline-block'; bt.textContent='A testar...'; msg.textContent='';
+  try {
+    const r = await fetch(`${url}/rest/v1/disciplinas?limit=1`,{headers:{apikey:key,Authorization:`Bearer ${key}`}});
+    const data = await r.json();
+    if (Array.isArray(data)) {
+      SB_URL=url; SB_KEY=key;
+      localStorage.setItem('ib_url',url); localStorage.setItem('ib_key',key);
+      msg.textContent='✓ Ligação ok! A carregar...'; msg.style.color='var(--green)';
+      setTimeout(()=>{ fecharAdmin(); carregar(); },1000);
+    } else {
+      msg.textContent='Erro: '+(data?.message||JSON.stringify(data).slice(0,100)); msg.style.color='var(--red)';
+    }
+  } catch(e) { msg.textContent='Erro: '+e.message; msg.style.color='var(--red)'; }
+  sp.style.display='none'; bt.textContent='🔌 Testar e Salvar';
+}
+</script>
+</body>
+</html>
