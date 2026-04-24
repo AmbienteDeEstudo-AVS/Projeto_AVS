@@ -6,120 +6,278 @@
 <title>Intensube</title>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
 :root {
-  --bg: #f5f1e8; --bg2: #ebe5d4;
+  --bg: #f5f1e8; --bg2: #ebe5d4; --bg3: #e0d9c4;
   --ink: #1a1814; --ink2: #4a463c; --ink3: #8a8372;
-  --accent: #c84b1a; --green: #2d6a4f; --red: #b71c1c;
+  --accent: #c84b1a; --green: #2d6a4f; --red: #b71c1c; --amber: #d97706;
   --serif: 'EB Garamond', Georgia, serif;
   --mono: 'JetBrains Mono', 'Courier New', monospace;
+  --fs-base: 16px;
 }
-body { background: var(--bg); color: var(--ink); font-family: var(--serif); min-height: 100vh; }
-button, input { font-family: inherit; cursor: pointer; outline: none; }
+
+[data-tema="dark"] {
+  --bg: #1a1814; --bg2: #2a2620; --bg3: #3a3530;
+  --ink: #f5f1e8; --ink2: #c5bfae; --ink3: #8a8372;
+  --accent: #e56a3a; --green: #4a9d75; --red: #e04848; --amber: #f59e0b;
+}
+
+html { font-size: var(--fs-base); }
+body { background: var(--bg); color: var(--ink); font-family: var(--serif); min-height: 100vh; transition: background 0.2s, color 0.2s; padding-bottom: 80px; }
+button, input, select { font-family: inherit; cursor: pointer; outline: none; color: inherit; }
 @keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
 
 /* Páginas */
 .pg { display: none; padding: 32px 24px; max-width: 520px; margin: 0 auto; }
 .pg.on { display: block; }
 
 /* Tipografia */
-.mono { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--ink3); }
-h1 { font-size: 42px; font-weight: 900; letter-spacing: -0.04em; }
-h2 { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
+.mono { font-family: var(--mono); font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.2em; color: var(--ink3); }
+h1 { font-size: 2.625rem; font-weight: 900; letter-spacing: -0.04em; }
+h2 { font-size: 1.625rem; font-weight: 700; letter-spacing: -0.02em; }
 
 /* Botão voltar */
-.bv { background: none; border: none; display: flex; align-items: center; gap: 6px; color: var(--ink3); font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 24px; padding: 0; }
+.bv { background: none; border: none; display: flex; align-items: center; gap: 6px; color: var(--ink3); font-family: var(--mono); font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 24px; padding: 0; }
 
 /* Card de navegação */
-.nc { width: 100%; text-align: left; background: var(--bg); border: 2px solid var(--ink); padding: 20px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; transition: transform 0.15s, box-shadow 0.15s; }
+.nc { width: 100%; text-align: left; background: var(--bg); border: 2px solid var(--ink); padding: 20px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; transition: transform 0.15s, box-shadow 0.15s; color: inherit; }
 .nc:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--ink); }
-.nc .tag { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 0.1em; margin-bottom: 4px; }
-.nc .nm { font-size: 18px; font-weight: 700; }
-.nc .mt { font-family: var(--mono); font-size: 10px; color: var(--ink3); margin-top: 4px; }
+.nc .tag { font-family: var(--mono); font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.1em; margin-bottom: 4px; }
+.nc .nm { font-size: 1.125rem; font-weight: 700; }
+.nc .mt { font-family: var(--mono); font-size: 0.625rem; color: var(--ink3); margin-top: 4px; }
 
 /* Seção card */
 .sc { background: var(--bg); border: 1px solid var(--ink); padding: 18px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background 0.15s; }
 .sc:hover { background: var(--bg2); }
-.sc-ic { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; border-radius: 2px; }
+.sc-ic { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0; border-radius: 2px; }
 
 /* Resumo */
-.rc { border: 1px solid var(--ink); padding: 16px; margin-bottom: 12px; }
-.rc .un { font-family: var(--mono); font-size: 9px; color: var(--ink3); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 4px; }
-.rc .nm { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
-.rc .tx { font-size: 14.5px; color: var(--ink2); line-height: 1.65; margin-bottom: 10px; }
-.pk { font-family: var(--mono); font-size: 11px; color: var(--ink3); padding-left: 14px; position: relative; margin-bottom: 3px; line-height: 1.5; }
+.rc { border: 1px solid var(--ink); padding: 16px; margin-bottom: 12px; background: var(--bg); position: relative; }
+.rc .un { font-family: var(--mono); font-size: 0.5625rem; color: var(--ink3); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 4px; }
+.rc .nm { font-size: 1rem; font-weight: 700; margin-bottom: 8px; padding-right: 30px; }
+.rc .tx { font-size: 0.9rem; color: var(--ink2); line-height: 1.65; margin-bottom: 10px; }
+.pk { font-family: var(--mono); font-size: 0.6875rem; color: var(--ink3); padding-left: 14px; position: relative; margin-bottom: 3px; line-height: 1.5; }
 .pk::before { content: '→'; position: absolute; left: 0; font-weight: 700; }
 
+/* Botão favorito */
+.fav { position: absolute; top: 12px; right: 12px; background: transparent; border: none; font-size: 1.125rem; opacity: 0.4; transition: opacity 0.15s, transform 0.15s; padding: 4px; }
+.fav:hover { opacity: 1; transform: scale(1.15); }
+.fav.on { opacity: 1; color: var(--amber); }
+
 /* Barra de progresso */
-.bar { height: 4px; background: var(--bg2); margin-bottom: 20px; overflow: hidden; }
+.bar { height: 4px; background: var(--bg2); margin-bottom: 20px; overflow: hidden; border-radius: 2px; }
 .bar-f { height: 100%; transition: width 0.3s; }
 
 /* Flashcard */
-.fc { border: 2px solid; min-height: 200px; padding: 26px 20px; cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; transition: all 0.2s; margin-bottom: 16px; }
+.fc { border: 2px solid; min-height: 200px; padding: 26px 20px; cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; transition: all 0.2s; margin-bottom: 16px; position: relative; }
 .fc-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-.fc-btn { padding: 13px; font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; border: 2px solid; display: flex; align-items: center; justify-content: center; gap: 7px; }
+.fc-btn { padding: 13px; font-family: var(--mono); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.12em; border: 2px solid; display: flex; align-items: center; justify-content: center; gap: 7px; }
 
 /* Exercício */
-.ex { border: 1px solid var(--ink); margin-bottom: 16px; overflow: hidden; }
-.ex-h { padding: 14px 16px; border-bottom: 1px solid var(--ink3); }
-.ex-tp { font-family: var(--mono); font-size: 9px; color: var(--ink3); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 6px; }
-.ex-q { font-size: 16px; font-weight: 700; line-height: 1.35; }
+.ex { border: 1px solid var(--ink); margin-bottom: 16px; overflow: hidden; background: var(--bg); position: relative; }
+.ex-h { padding: 14px 16px; border-bottom: 1px solid var(--ink3); padding-right: 44px; }
+.ex-tp { font-family: var(--mono); font-size: 0.5625rem; color: var(--ink3); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 6px; }
+.ex-q { font-size: 1rem; font-weight: 700; line-height: 1.35; }
 .ex-opts { padding: 10px 12px; display: grid; gap: 6px; }
-.op { padding: 10px 12px; border: 1px solid var(--ink3); font-size: 14px; text-align: left; display: flex; gap: 10px; align-items: flex-start; background: var(--bg); transition: background 0.15s; width: 100%; }
+.op { padding: 10px 12px; border: 1px solid var(--ink3); font-size: 0.875rem; text-align: left; display: flex; gap: 10px; align-items: flex-start; background: var(--bg); transition: background 0.15s; width: 100%; color: inherit; }
 .op:hover:not(:disabled) { background: var(--bg2); }
-.op.ok { background: rgba(45,106,79,0.1) !important; border: 1.5px solid var(--green) !important; }
-.op.err { background: rgba(183,28,28,0.08) !important; border: 1.5px solid var(--red) !important; }
+.op.ok { background: rgba(45,106,79,0.15) !important; border: 1.5px solid var(--green) !important; }
+.op.err { background: rgba(183,28,28,0.12) !important; border: 1.5px solid var(--red) !important; }
 .ex-exp { padding: 10px 14px 12px; border-top: 2px solid; }
 .ex-nav { display: flex; justify-content: space-between; gap: 10px; }
-.bn { border: 1px solid var(--ink3); padding: 9px 16px; font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; background: transparent; color: var(--ink3); }
-.bn.pr { background: var(--ink); color: white; border-color: var(--ink); }
-.bn:disabled { opacity: 0.3; }
+.bn { border: 1px solid var(--ink3); padding: 9px 16px; font-family: var(--mono); font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.12em; background: transparent; color: var(--ink3); }
+.bn.pr { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.bn:disabled { opacity: 0.3; cursor: not-allowed; }
 
 /* Script */
-.scard { border: 1px solid var(--ink); margin-bottom: 14px; }
+.scard { border: 1px solid var(--ink); margin-bottom: 14px; background: var(--bg); }
 .sh { padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; color: white; }
-.sb-pre { padding: 14px; font-family: var(--mono); font-size: 11.5px; line-height: 1.7; white-space: pre-wrap; background: var(--bg); word-break: break-word; }
+.sb-pre { padding: 14px; font-family: var(--mono); font-size: 0.72rem; line-height: 1.7; white-space: pre-wrap; background: var(--bg); word-break: break-word; color: var(--ink); }
 
 /* Loading */
 .ld { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; gap: 14px; }
 .sp { width: 26px; height: 26px; border: 2px solid var(--ink3); border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; }
 
-/* Modal admin */
+/* Modal */
 .ov { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; align-items: center; justify-content: center; padding: 24px; }
 .ov.on { display: flex; }
-.md { background: var(--bg); border: 2px solid var(--ink); padding: 28px; width: 100%; max-width: 420px; }
-.md-inp { width: 100%; padding: 9px 11px; border: 1px solid var(--ink); background: var(--bg); color: var(--ink); font-size: 12px; font-family: var(--mono); outline: none; margin-top: 5px; margin-bottom: 12px; }
+.md { background: var(--bg); border: 2px solid var(--ink); padding: 28px; width: 100%; max-width: 440px; max-height: 90vh; overflow-y: auto; }
+.md-inp { width: 100%; padding: 10px 12px; border: 1px solid var(--ink); background: var(--bg); color: var(--ink); font-size: 0.8125rem; font-family: var(--mono); outline: none; margin-top: 5px; margin-bottom: 12px; }
+
+/* Menu flutuante */
+.fab { position: fixed; bottom: 20px; right: 20px; background: var(--ink); color: var(--bg); border: none; width: 52px; height: 52px; border-radius: 50%; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.25); z-index: 50; transition: transform 0.15s; }
+.fab:hover { transform: scale(1.08); }
+
+.menu-item { width: 100%; text-align: left; background: var(--bg); border: 1px solid var(--ink); padding: 14px 16px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; font-size: 0.9375rem; color: inherit; transition: background 0.15s; }
+.menu-item:hover { background: var(--bg2); }
+.menu-item .ic { font-size: 1.25rem; width: 28px; text-align: center; }
+
+/* Card destaque home */
+.hi-card { background: var(--bg); border: 2px solid var(--ink); padding: 20px; margin-bottom: 12px; position: relative; overflow: hidden; }
+.hi-card.urgent { border-color: var(--red); background: rgba(183,28,28,0.06); }
+.hi-card.warn { border-color: var(--amber); background: rgba(217,119,6,0.07); }
+.hi-card .ic-big { position: absolute; right: -8px; top: -8px; font-size: 4rem; opacity: 0.08; }
+.hi-lbl { font-family: var(--mono); font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--ink3); margin-bottom: 6px; }
+.hi-val { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 4px; }
+.hi-sub { font-family: var(--mono); font-size: 0.6875rem; color: var(--ink3); }
 
 /* Admin btn */
-.adm { position: fixed; bottom: 16px; right: 16px; background: transparent; border: 1px solid var(--ink3); padding: 6px 12px; font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink3); z-index: 50; }
+.adm { position: fixed; bottom: 16px; right: 84px; background: transparent; border: 1px solid var(--ink3); padding: 6px 12px; font-family: var(--mono); font-size: 0.5625rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink3); z-index: 50; }
+
+/* Timer simulado */
+.timer-box { position: sticky; top: 0; background: var(--bg); border-bottom: 2px solid var(--ink); padding: 12px 16px; margin: -32px -24px 20px -24px; z-index: 10; display: flex; justify-content: space-between; align-items: center; }
+.timer-val { font-family: var(--mono); font-size: 1.5rem; font-weight: 700; letter-spacing: 0.05em; }
+.timer-val.warn { color: var(--amber); }
+.timer-val.crit { color: var(--red); animation: pulse 1s infinite; }
+
+/* Config controles */
+.cfg-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--bg2); }
+.cfg-row:last-child { border-bottom: none; }
+.cfg-lbl { font-size: 0.9375rem; }
+.cfg-desc { font-family: var(--mono); font-size: 0.625rem; color: var(--ink3); margin-top: 2px; }
+
+/* Toggle switch */
+.sw { position: relative; width: 44px; height: 24px; background: var(--bg2); border: 1px solid var(--ink3); border-radius: 12px; cursor: pointer; transition: background 0.2s; }
+.sw::after { content: ''; position: absolute; left: 2px; top: 2px; width: 18px; height: 18px; background: var(--ink); border-radius: 50%; transition: transform 0.2s; }
+.sw.on { background: var(--green); border-color: var(--green); }
+.sw.on::after { transform: translateX(20px); background: white; }
+
+/* Seletor de fonte */
+.fs-opts { display: flex; gap: 6px; }
+.fs-opt { padding: 6px 12px; border: 1px solid var(--ink3); background: var(--bg); font-family: var(--mono); font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink3); }
+.fs-opt.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+/* Item de lista (favoritos, histórico, provas) */
+.li { background: var(--bg); border: 1px solid var(--ink3); padding: 14px 16px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.li .nm { font-size: 0.9375rem; font-weight: 700; margin-bottom: 3px; }
+.li .mt { font-family: var(--mono); font-size: 0.625rem; color: var(--ink3); text-transform: uppercase; letter-spacing: 0.1em; }
+.li-x { background: transparent; border: none; color: var(--ink3); font-size: 1.125rem; padding: 4px; }
+.li-x:hover { color: var(--red); }
+
+/* Countdown prova */
+.cd-box { border: 2px solid; padding: 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+.cd-num { font-size: 2.25rem; font-weight: 900; line-height: 1; letter-spacing: -0.04em; }
 
 /* Resultado final */
 .res-wrap { text-align: center; padding: 32px 0; }
-.res-nota { font-size: 68px; font-weight: 900; line-height: 1; letter-spacing: -0.04em; margin-bottom: 6px; }
+.res-nota { font-size: 4.25rem; font-weight: 900; line-height: 1; letter-spacing: -0.04em; margin-bottom: 6px; }
+
+/* Véspera - resumo condensado */
+.vs-item { border-left: 3px solid; padding: 10px 14px; margin-bottom: 10px; background: var(--bg); }
+.vs-item .nm { font-size: 0.9375rem; font-weight: 700; margin-bottom: 4px; }
+.vs-item .tx { font-size: 0.8125rem; color: var(--ink2); line-height: 1.5; }
 </style>
 </head>
 <body>
 
 <!-- Modal Admin -->
-<div class="ov" id="ov">
+<div class="ov" id="ov-adm">
   <div class="md">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-      <strong style="font-size:18px">Configuração</strong>
-      <button onclick="fecharAdmin()" style="background:none;border:none;font-size:14px;color:var(--ink3)">✕</button>
+      <strong style="font-size:1.125rem">Configuração Supabase</strong>
+      <button onclick="fecharModal('adm')" style="background:none;border:none;font-size:1rem;color:var(--ink3)">✕</button>
     </div>
-    <p style="font-size:14px;color:var(--ink2);line-height:1.5;margin-bottom:16px">Cole as credenciais do Supabase. Só precisas fazer uma vez.</p>
-    <div class="mono" style="margin-bottom:4px">URL do Supabase</div>
+    <p style="font-size:0.875rem;color:var(--ink2);line-height:1.5;margin-bottom:16px">Cole as credenciais do Supabase.</p>
+    <div class="mono" style="margin-bottom:4px">URL</div>
     <input id="a-url" class="md-inp" placeholder="https://xxx.supabase.co" />
     <div class="mono" style="margin-bottom:4px">Anon Key</div>
     <input id="a-key" class="md-inp" placeholder="eyJhbGci..." />
-    <button onclick="salvarAdmin()" style="width:100%;background:var(--ink);color:white;border:none;padding:12px;font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.12em;display:flex;align-items:center;justify-content:center;gap:8px">
-      <span id="a-sp" class="sp" style="width:13px;height:13px;display:none;border-color:white;border-top-color:transparent"></span>
+    <button onclick="salvarAdmin()" style="width:100%;background:var(--ink);color:var(--bg);border:none;padding:12px;font-family:var(--mono);font-size:0.625rem;text-transform:uppercase;letter-spacing:0.12em;display:flex;align-items:center;justify-content:center;gap:8px">
+      <span id="a-sp" class="sp" style="width:13px;height:13px;display:none;border-color:currentColor;border-top-color:transparent"></span>
       <span id="a-bt">🔌 Testar e Salvar</span>
     </button>
-    <div id="a-msg" style="font-family:var(--mono);font-size:11px;margin-top:10px;line-height:1.5"></div>
+    <div id="a-msg" style="font-family:var(--mono);font-size:0.6875rem;margin-top:10px;line-height:1.5"></div>
   </div>
 </div>
 
-<button class="adm" onclick="abrirAdmin()">⚙ Admin</button>
+<!-- Modal Menu -->
+<div class="ov" id="ov-menu">
+  <div class="md">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+      <strong style="font-size:1.125rem">Menu</strong>
+      <button onclick="fecharModal('menu')" style="background:none;border:none;font-size:1rem;color:var(--ink3)">✕</button>
+    </div>
+    <button class="menu-item" onclick="fecharModal('menu');ir('provas');renderProvas()"><span class="ic">📅</span><div><div>Cronograma de provas</div><div class="mono">Agende e acompanhe</div></div></button>
+    <button class="menu-item" onclick="fecharModal('menu');ir('favoritos');renderFavoritos()"><span class="ic">⭐</span><div><div>Favoritos</div><div class="mono">O que salvei</div></div></button>
+    <button class="menu-item" onclick="fecharModal('menu');ir('historico');renderHistorico()"><span class="ic">📊</span><div><div>Histórico de simulados</div><div class="mono">Últimos resultados</div></div></button>
+    <button class="menu-item" onclick="fecharModal('menu');abrirConfig()"><span class="ic">⚙️</span><div><div>Configurações</div><div class="mono">Tema, fonte</div></div></button>
+    <button class="menu-item" onclick="fecharModal('menu');abrirAdmin()"><span class="ic">🔑</span><div><div>Supabase</div><div class="mono">Credenciais</div></div></button>
+  </div>
+</div>
+
+<!-- Modal Config -->
+<div class="ov" id="ov-cfg">
+  <div class="md">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+      <strong style="font-size:1.125rem">Configurações</strong>
+      <button onclick="fecharModal('cfg')" style="background:none;border:none;font-size:1rem;color:var(--ink3)">✕</button>
+    </div>
+
+    <div class="cfg-row">
+      <div>
+        <div class="cfg-lbl">Modo escuro</div>
+        <div class="cfg-desc">Troca o esquema de cores</div>
+      </div>
+      <div class="sw" id="sw-tema" onclick="toggleTema()"></div>
+    </div>
+
+    <div class="cfg-row">
+      <div>
+        <div class="cfg-lbl">Tamanho da fonte</div>
+        <div class="cfg-desc">Ajuste o texto para ler melhor</div>
+      </div>
+      <div class="fs-opts">
+        <button class="fs-opt" data-f="14" onclick="setFonte(14)">A</button>
+        <button class="fs-opt" data-f="16" onclick="setFonte(16)">A</button>
+        <button class="fs-opt" data-f="18" onclick="setFonte(18)">A</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Agendar Prova -->
+<div class="ov" id="ov-prova">
+  <div class="md">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <strong style="font-size:1.125rem">Agendar prova</strong>
+      <button onclick="fecharModal('prova')" style="background:none;border:none;font-size:1rem;color:var(--ink3)">✕</button>
+    </div>
+    <div class="mono" style="margin-bottom:4px">Disciplina</div>
+    <select id="pr-disc" class="md-inp"></select>
+    <div class="mono" style="margin-bottom:4px">Data da prova</div>
+    <input id="pr-data" type="date" class="md-inp" />
+    <div class="mono" style="margin-bottom:4px">Título (opcional)</div>
+    <input id="pr-tit" class="md-inp" placeholder="Ex: Prova Bimestral" />
+    <button onclick="salvarProva()" style="width:100%;background:var(--ink);color:var(--bg);border:none;padding:12px;font-family:var(--mono);font-size:0.625rem;text-transform:uppercase;letter-spacing:0.12em">Agendar</button>
+  </div>
+</div>
+
+<!-- Modal Iniciar Simulado -->
+<div class="ov" id="ov-sim">
+  <div class="md">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <strong style="font-size:1.125rem">Iniciar simulado</strong>
+      <button onclick="fecharModal('sim')" style="background:none;border:none;font-size:1rem;color:var(--ink3)">✕</button>
+    </div>
+    <p style="font-size:0.875rem;color:var(--ink2);line-height:1.5;margin-bottom:16px">Exercícios aleatórios com tempo cronometrado.</p>
+    <div class="mono" style="margin-bottom:6px">Quantas questões?</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px">
+      <button class="fs-opt sim-q" data-q="5" onclick="setSimQ(5)">5</button>
+      <button class="fs-opt sim-q on" data-q="10" onclick="setSimQ(10)">10</button>
+      <button class="fs-opt sim-q" data-q="15" onclick="setSimQ(15)">15</button>
+    </div>
+    <div class="mono" style="margin-bottom:6px">Tempo total</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:20px">
+      <button class="fs-opt sim-t" data-t="5" onclick="setSimT(5)">5 min</button>
+      <button class="fs-opt sim-t on" data-t="15" onclick="setSimT(15)">15 min</button>
+      <button class="fs-opt sim-t" data-t="30" onclick="setSimT(30)">30 min</button>
+    </div>
+    <button onclick="iniciarSimulado()" style="width:100%;background:var(--accent);color:white;border:none;padding:14px;font-family:var(--mono);font-size:0.6875rem;text-transform:uppercase;letter-spacing:0.15em;font-weight:700">▶ Começar simulado</button>
+  </div>
+</div>
+
+<button class="fab" onclick="abrirModal('menu')" title="Menu">☰</button>
 
 <!-- Loading -->
 <div id="pg-load" class="ld">
@@ -130,16 +288,19 @@ h2 { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
 <!-- Sem conexão -->
 <div id="pg-off" style="display:none;padding:48px 24px;text-align:center;max-width:420px;margin:0 auto">
   <h1 style="margin-bottom:24px">Intensube</h1>
-  <p style="font-size:15px;color:var(--ink2);line-height:1.5;margin-bottom:24px">O app ainda não está ligado à base de dados.</p>
-  <button onclick="abrirAdmin()" style="background:var(--ink);color:white;border:none;padding:13px 24px;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:0.15em">⚙ Configurar</button>
+  <p style="font-size:0.9375rem;color:var(--ink2);line-height:1.5;margin-bottom:24px">O app ainda não está ligado à base de dados.</p>
+  <button onclick="abrirAdmin()" style="background:var(--ink);color:var(--bg);border:none;padding:13px 24px;font-family:var(--mono);font-size:0.6875rem;text-transform:uppercase;letter-spacing:0.15em">⚙ Configurar</button>
 </div>
 
 <!-- Início -->
-<div id="pg-inicio" class="pg" style="padding-top:48px">
-  <div style="text-align:center;margin-bottom:40px">
+<div id="pg-inicio" class="pg" style="padding-top:40px">
+  <div style="text-align:center;margin-bottom:28px">
     <h1 style="margin-bottom:6px">Intensube</h1>
     <div class="mono">estude antes da aula</div>
   </div>
+
+  <div id="home-extras" style="margin-bottom:28px"></div>
+
   <div class="mono" style="margin-bottom:12px">escolha o seu curso</div>
   <div id="lista-cursos"></div>
 </div>
@@ -148,7 +309,7 @@ h2 { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
 <div id="pg-periodos" class="pg">
   <button class="bv" onclick="ir('inicio')">← Voltar</button>
   <h2 id="p-curso" style="margin-bottom:6px"></h2>
-  <p style="font-size:16px;color:var(--ink2);margin-bottom:24px">Qual período você está?</p>
+  <p style="font-size:1rem;color:var(--ink2);margin-bottom:24px">Qual período você está?</p>
   <div id="lista-periodos"></div>
 </div>
 
@@ -163,7 +324,9 @@ h2 { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
 <!-- Menu disciplina -->
 <div id="pg-disc" class="pg">
   <button class="bv" onclick="ir('disciplinas')">← Voltar</button>
-  <div id="disc-hdr" style="padding-left:14px;margin-bottom:30px"></div>
+  <div id="disc-hdr" style="padding-left:14px;margin-bottom:22px"></div>
+  <div id="disc-progresso" style="margin-bottom:24px"></div>
+  <div id="disc-prova-info" style="margin-bottom:16px"></div>
   <div id="disc-secs"></div>
 </div>
 
@@ -186,6 +349,18 @@ h2 { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
   <div id="ex-cnt"></div>
 </div>
 
+<!-- Simulado -->
+<div id="pg-simulado" class="pg" style="max-width:560px">
+  <button class="bv" onclick="sairSimulado()">← Sair</button>
+  <div id="sim-cnt"></div>
+</div>
+
+<!-- Véspera -->
+<div id="pg-vespera" class="pg">
+  <button class="bv" onclick="ir('disc')">← Voltar</button>
+  <div id="vs-cnt"></div>
+</div>
+
 <!-- Scripts -->
 <div id="pg-scripts" class="pg" style="max-width:560px">
   <button class="bv" onclick="ir('disc')">← Voltar</button>
@@ -193,23 +368,59 @@ h2 { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
   <div id="sc-lst"></div>
 </div>
 
+<!-- Cronograma de provas -->
+<div id="pg-provas" class="pg">
+  <button class="bv" onclick="ir('inicio')">← Voltar</button>
+  <h2 style="margin-bottom:8px">Cronograma</h2>
+  <p style="font-size:0.9375rem;color:var(--ink2);margin-bottom:20px">Suas próximas provas agendadas.</p>
+  <div id="provas-lst"></div>
+  <button onclick="abrirAgendarProva()" style="width:100%;margin-top:14px;background:var(--ink);color:var(--bg);border:none;padding:14px;font-family:var(--mono);font-size:0.6875rem;text-transform:uppercase;letter-spacing:0.12em">+ Agendar nova prova</button>
+</div>
+
+<!-- Favoritos -->
+<div id="pg-favoritos" class="pg">
+  <button class="bv" onclick="ir('inicio')">← Voltar</button>
+  <h2 style="margin-bottom:8px">Favoritos</h2>
+  <p style="font-size:0.9375rem;color:var(--ink2);margin-bottom:20px">Tudo o que você marcou com estrela.</p>
+  <div id="fav-cnt"></div>
+</div>
+
+<!-- Histórico -->
+<div id="pg-historico" class="pg">
+  <button class="bv" onclick="ir('inicio')">← Voltar</button>
+  <h2 style="margin-bottom:8px">Histórico de simulados</h2>
+  <p style="font-size:0.9375rem;color:var(--ink2);margin-bottom:20px">Seus últimos 50 simulados.</p>
+  <div id="hist-cnt"></div>
+</div>
+
 <script>
 // ============================================================
 // CONFIGURAÇÃO — cola aqui as tuas credenciais do Supabase
 // ============================================================
 const CONFIG_URL = 'https://dtcjamubwickzadgztot.supabase.co';
-const CONFIG_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0Y2phbXVid2lja3phZGd6dG90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3Mjg5OTAsImV4cCI6MjA5MjMwNDk5MH0.W9Pf3rbIo25xLcJX9R4h8IqqqIS8dCUrQOIOiPB1Rrs';
+const CONFIG_KEY = 'COLA_AQUI_A_TUA_ANON_KEY';
 // ============================================================
 
-// Estado
+// Estado global
 let SB_URL = CONFIG_URL || localStorage.getItem('ib_url') || '';
 let SB_KEY = CONFIG_KEY !== 'COLA_AQUI_A_TUA_ANON_KEY' ? CONFIG_KEY : (localStorage.getItem('ib_key') || '');
 let discs = [], discAtual = null, cursoAtual = '', periodoAtual = '';
 let FC = [], fcI = 0, fcV = false, fcR = {};
 let EX = [], exI = 0, exR = {};
 
+// Preferências
+let favs = JSON.parse(localStorage.getItem('ib_favs') || '{"topicos":[],"flashcards":[],"exercicios":[]}');
+let provas = JSON.parse(localStorage.getItem('ib_provas') || '[]');
+let historico = JSON.parse(localStorage.getItem('ib_historico') || '[]');
+let progresso = JSON.parse(localStorage.getItem('ib_progresso') || '{}');
+
+// Simulado
+let SIM = { ativo: false, questoes: [], i: 0, respostas: {}, totalQ: 10, totalMin: 15, fim: 0, timerId: null, discId: '' };
+
 // Init
 window.onload = () => {
+  aplicarTema();
+  aplicarFonte();
   document.getElementById('a-url').value = SB_URL;
   document.getElementById('a-key').value = SB_KEY;
   if (SB_URL && SB_KEY) carregar(); else show('off');
@@ -217,18 +428,51 @@ window.onload = () => {
 
 // Navegação
 function show(id) {
-  ['load','off','inicio','periodos','disciplinas','disc','resumos','flash','ex','scripts']
+  ['load','off','inicio','periodos','disciplinas','disc','resumos','flash','ex','simulado','vespera','scripts','provas','favoritos','historico']
     .forEach(p => {
       const el = document.getElementById('pg-' + p);
-      if (el) el.style.display = 'none';
+      if (el) { el.style.display = 'none'; if (el.classList.contains('pg')) el.classList.remove('on'); }
     });
   const el = document.getElementById('pg-' + id);
   if (el) { el.style.display = 'block'; if (el.classList.contains('pg')) el.classList.add('on'); }
 }
+function ir(id) { show(id); window.scrollTo(0,0); if (id === 'inicio') renderInicio(); }
 
-function ir(id) { show(id); window.scrollTo(0,0); }
+// ============================================================
+// TEMA E FONTE
+// ============================================================
+function aplicarTema() {
+  const t = localStorage.getItem('ib_tema') || 'light';
+  document.documentElement.setAttribute('data-tema', t);
+  const sw = document.getElementById('sw-tema');
+  if (sw) sw.classList.toggle('on', t === 'dark');
+}
+function toggleTema() {
+  const atual = document.documentElement.getAttribute('data-tema') || 'light';
+  const novo = atual === 'light' ? 'dark' : 'light';
+  localStorage.setItem('ib_tema', novo);
+  aplicarTema();
+}
+function aplicarFonte() {
+  const f = localStorage.getItem('ib_fonte') || '16';
+  document.documentElement.style.setProperty('--fs-base', f + 'px');
+  document.querySelectorAll('.fs-opt[data-f]').forEach(b => b.classList.toggle('on', b.dataset.f === f));
+}
+function setFonte(px) {
+  localStorage.setItem('ib_fonte', String(px));
+  aplicarFonte();
+}
 
-// Carregar disciplinas do Supabase
+// ============================================================
+// MODAIS
+// ============================================================
+function abrirModal(nome) { document.getElementById('ov-' + nome).classList.add('on'); }
+function fecharModal(nome) { document.getElementById('ov-' + nome).classList.remove('on'); }
+function abrirConfig() { aplicarTema(); aplicarFonte(); abrirModal('cfg'); }
+
+// ============================================================
+// CARREGAMENTO
+// ============================================================
 async function carregar() {
   show('load');
   try {
@@ -243,13 +487,74 @@ async function carregar() {
   } catch(e) { show('off'); }
 }
 
-// Início: lista de cursos
+// ============================================================
+// HOME - TELA INICIAL COM INFOS EXTRAS
+// ============================================================
 function renderInicio() {
+  // Extras chamativos: próxima prova + último simulado
+  const extrasEl = document.getElementById('home-extras');
+  let html = '';
+
+  // Próxima prova
+  const proxima = provasOrdenadas()[0];
+  if (proxima) {
+    const dias = diasAte(proxima.data);
+    const disc = discs.find(d => d.id === proxima.discId);
+    const nome = disc ? disc.nome : 'Disciplina';
+    const cls = dias <= 2 ? 'urgent' : dias <= 7 ? 'warn' : '';
+    const label = dias < 0 ? `Passou há ${-dias}d` : dias === 0 ? 'HOJE!' : dias === 1 ? 'Amanhã' : `Em ${dias} dias`;
+    html += `
+      <div class="hi-card ${cls}" onclick="ir('provas');renderProvas()" style="cursor:pointer">
+        <div class="ic-big">📅</div>
+        <div class="hi-lbl">Próxima prova</div>
+        <div class="hi-val">${label}</div>
+        <div class="hi-sub">${disc?disc.sigla+' · ':''}${proxima.titulo || nome}</div>
+      </div>`;
+  }
+
+  // Último simulado
+  if (historico.length) {
+    const ult = historico[0];
+    const pct = Math.round((ult.acertos / ult.total) * 100);
+    const disc = discs.find(d => d.id === ult.discId);
+    const tempoDecorrido = tempoRelativo(ult.timestamp);
+    html += `
+      <div class="hi-card" onclick="ir('historico');renderHistorico()" style="cursor:pointer">
+        <div class="ic-big">📊</div>
+        <div class="hi-lbl">Último simulado</div>
+        <div class="hi-val">${ult.acertos}/${ult.total} <span style="font-size:0.9rem;color:var(--ink3);font-weight:500">(${pct}%)</span></div>
+        <div class="hi-sub">${disc?disc.sigla+' · ':''}${tempoDecorrido}</div>
+      </div>`;
+  }
+
+  // Stats gerais
+  const totalFavs = favs.topicos.length + favs.flashcards.length + favs.exercicios.length;
+  if (totalFavs > 0 || provas.length > 0 || historico.length > 0) {
+    html += `
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px">
+        <div class="hi-card" style="padding:12px;text-align:center;margin:0;cursor:pointer" onclick="ir('provas');renderProvas()">
+          <div class="hi-val" style="font-size:1.375rem">${provas.length}</div>
+          <div class="hi-sub" style="font-size:0.5625rem">provas</div>
+        </div>
+        <div class="hi-card" style="padding:12px;text-align:center;margin:0;cursor:pointer" onclick="ir('favoritos');renderFavoritos()">
+          <div class="hi-val" style="font-size:1.375rem">${totalFavs}</div>
+          <div class="hi-sub" style="font-size:0.5625rem">favoritos</div>
+        </div>
+        <div class="hi-card" style="padding:12px;text-align:center;margin:0;cursor:pointer" onclick="ir('historico');renderHistorico()">
+          <div class="hi-val" style="font-size:1.375rem">${historico.length}</div>
+          <div class="hi-sub" style="font-size:0.5625rem">simulados</div>
+        </div>
+      </div>`;
+  }
+
+  extrasEl.innerHTML = html;
+
+  // Lista de cursos
   const cursos = [...new Map(discs.map(d => [d.curso, { id: d.curso, total: discs.filter(x => x.curso === d.curso).length }])).values()];
   document.getElementById('lista-cursos').innerHTML = cursos.map(c => `
     <button class="nc" onclick="selCurso('${c.id}')">
       <div><div class="tag" style="color:var(--accent)">${c.id}</div><div class="nm">${c.id}</div><div class="mt">${c.total} disciplina${c.total!==1?'s':''}</div></div>
-      <span style="font-size:22px;color:var(--ink3)">›</span>
+      <span style="font-size:1.375rem;color:var(--ink3)">›</span>
     </button>`).join('');
 }
 
@@ -260,7 +565,7 @@ function selCurso(id) {
   document.getElementById('lista-periodos').innerHTML = periodos.map(p => `
     <button class="nc" onclick="selPeriodo('${p}')">
       <div class="nm">${p}</div>
-      <span style="font-size:22px;color:var(--ink3)">›</span>
+      <span style="font-size:1.375rem;color:var(--ink3)">›</span>
     </button>`).join('');
   ir('periodos');
 }
@@ -270,24 +575,99 @@ function selPeriodo(p) {
   document.getElementById('d-bread').textContent = `${cursoAtual} · ${p}`;
   const lista = discs.filter(d => d.curso === cursoAtual && d.periodo === p);
   document.getElementById('lista-discs').innerHTML = !lista.length
-    ? '<p style="color:var(--ink2);font-size:15px;text-align:center;padding:32px">Nenhuma disciplina disponível.</p>'
+    ? '<p style="color:var(--ink2);font-size:0.9375rem;text-align:center;padding:32px">Nenhuma disciplina disponível.</p>'
     : lista.map(d => {
         const jd = d.json_data || {};
         const nT = jd.disciplina?.unidades?.reduce((a,u)=>a+u.topicos.length,0)||0;
         const nF = (jd.flashcards||[]).length;
         const nE = (jd.exercicios||[]).length;
+        const pct = calcProgresso(d.id, jd);
         return `<button class="nc" style="border-left:5px solid ${d.cor||'var(--accent)'}" onclick="abrirDisc('${d.id}')">
-          <div>
+          <div style="flex:1">
             <div class="tag" style="color:${d.cor||'var(--accent)'}">${d.sigla} · ${d.ch||'?'}h</div>
             <div class="nm">${d.nome}</div>
             <div class="mt">${nT} resumos · ${nF} flashcards · ${nE} exercícios</div>
+            <div style="margin-top:8px;height:3px;background:var(--bg2);border-radius:2px;overflow:hidden">
+              <div style="width:${pct}%;height:100%;background:${d.cor||'var(--accent)'};transition:width 0.3s"></div>
+            </div>
+            <div class="mt" style="margin-top:3px">${pct}% concluído</div>
           </div>
-          <span style="font-size:22px;color:var(--ink3)">›</span>
+          <span style="font-size:1.375rem;color:var(--ink3);margin-left:10px">›</span>
         </button>`;
       }).join('');
   ir('disciplinas');
 }
 
+// ============================================================
+// PROGRESSO POR MATÉRIA
+// ============================================================
+function calcProgresso(discId, jd) {
+  const p = progresso[discId] || { topicos: [], flashcards: {}, exercicios: {} };
+  const totT = jd.disciplina?.unidades?.reduce((a,u)=>a+u.topicos.length,0)||0;
+  const totF = (jd.flashcards||[]).length;
+  const totE = (jd.exercicios||[]).length;
+  const total = totT + totF + totE;
+  if (!total) return 0;
+  const feitos = (p.topicos?.length||0)
+    + Object.values(p.flashcards||{}).filter(v=>v==='s').length
+    + Object.values(p.exercicios||{}).filter(v=>v===true).length;
+  return Math.min(100, Math.round((feitos / total) * 100));
+}
+function marcarTopico(discId, tid) {
+  if (!progresso[discId]) progresso[discId] = { topicos: [], flashcards: {}, exercicios: {} };
+  const arr = progresso[discId].topicos;
+  if (!arr.includes(tid)) arr.push(tid);
+  salvarProgresso();
+}
+function marcarFlash(discId, idx, ok) {
+  if (!progresso[discId]) progresso[discId] = { topicos: [], flashcards: {}, exercicios: {} };
+  progresso[discId].flashcards[idx] = ok ? 's' : 'n';
+  salvarProgresso();
+}
+function marcarEx(discId, idx, acertou) {
+  if (!progresso[discId]) progresso[discId] = { topicos: [], flashcards: {}, exercicios: {} };
+  progresso[discId].exercicios[idx] = acertou;
+  salvarProgresso();
+}
+function salvarProgresso() { localStorage.setItem('ib_progresso', JSON.stringify(progresso)); }
+
+// ============================================================
+// FAVORITOS
+// ============================================================
+function ehFav(tipo, id) { return favs[tipo].some(x => x.id === id); }
+function toggleFav(tipo, id, discId, titulo) {
+  const idx = favs[tipo].findIndex(x => x.id === id);
+  if (idx >= 0) favs[tipo].splice(idx, 1);
+  else favs[tipo].push({ id, discId, titulo });
+  localStorage.setItem('ib_favs', JSON.stringify(favs));
+}
+function renderFavoritos() {
+  const el = document.getElementById('fav-cnt');
+  const todos = [
+    ...favs.topicos.map(f => ({...f, tipo:'topicos', icon:'📖', label:'Resumo'})),
+    ...favs.flashcards.map(f => ({...f, tipo:'flashcards', icon:'🃏', label:'Flashcard'})),
+    ...favs.exercicios.map(f => ({...f, tipo:'exercicios', icon:'✏️', label:'Exercício'}))
+  ];
+  if (!todos.length) {
+    el.innerHTML = '<p style="color:var(--ink2);font-size:0.9375rem;text-align:center;padding:40px">Nada favoritado ainda. Toque na estrela em resumos, flashcards ou exercícios.</p>';
+    return;
+  }
+  el.innerHTML = todos.map(f => {
+    const disc = discs.find(d => d.id === f.discId);
+    return `
+      <div class="li">
+        <div style="flex:1">
+          <div class="nm">${f.icon} ${f.titulo}</div>
+          <div class="mt">${f.label}${disc ? ' · ' + disc.sigla : ''}</div>
+        </div>
+        <button class="li-x" onclick="toggleFav('${f.tipo}','${f.id}','${f.discId}','');renderFavoritos()">✕</button>
+      </div>`;
+  }).join('');
+}
+
+// ============================================================
+// DISCIPLINA
+// ============================================================
 function abrirDisc(id) {
   discAtual = discs.find(d => d.id === id);
   if (!discAtual) return;
@@ -297,45 +677,84 @@ function abrirDisc(id) {
   const nE = (jd.exercicios||[]).length;
   const nV = (jd.roteiro_video||[]).length;
   const nP = (jd.podcast||[]).length;
+  const pct = calcProgresso(d.id, jd);
 
   document.getElementById('disc-hdr').innerHTML = `
     <div style="border-left:5px solid ${cor};padding-left:14px">
-      <div style="font-family:var(--mono);font-size:10px;color:${cor};font-weight:700;letter-spacing:0.1em;margin-bottom:4px">${d.sigla}</div>
-      <div style="font-size:24px;font-weight:700;letter-spacing:-0.02em;line-height:1.15">${d.nome}</div>
-      ${d.docente?`<div style="font-family:var(--mono);font-size:10px;color:var(--ink3);margin-top:4px">Prof. ${d.docente}</div>`:''}
+      <div style="font-family:var(--mono);font-size:0.625rem;color:${cor};font-weight:700;letter-spacing:0.1em;margin-bottom:4px">${d.sigla}</div>
+      <div style="font-size:1.5rem;font-weight:700;letter-spacing:-0.02em;line-height:1.15">${d.nome}</div>
+      ${d.docente?`<div style="font-family:var(--mono);font-size:0.625rem;color:var(--ink3);margin-top:4px">Prof. ${d.docente}</div>`:''}
     </div>`;
 
-  document.getElementById('disc-secs').innerHTML = [
-    { id:'resumos',    e:'📖', nm:'Resumos',    mt:`${nT} tópicos`,        c:'#3f5b7c' },
-    { id:'flashcards', e:'🃏', nm:'Flashcards', mt:`${nF} perguntas`,      c:'#8b6f4a' },
-    { id:'exercicios', e:'✏️', nm:'Exercícios', mt:`${nE} questões`,       c:'#2d6a4f' },
-    { id:'video',      e:'🎥', nm:'Roteiro',    mt:`${nV} vídeos`,          c:'#d97757' },
-    { id:'podcast',    e:'🎙', nm:'Podcast',    mt:`${nP} episódios`,       c:'#7b4f8e' },
-  ].map(s => `
+  // Barra de progresso da disciplina
+  document.getElementById('disc-progresso').innerHTML = `
+    <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+      <span class="mono">Progresso</span>
+      <span class="mono" style="color:${cor};font-weight:700">${pct}%</span>
+    </div>
+    <div class="bar"><div class="bar-f" style="width:${pct}%;background:${cor}"></div></div>`;
+
+  // Info de prova agendada
+  const provaDesta = provas.find(p => p.discId === d.id);
+  const infoProva = document.getElementById('disc-prova-info');
+  if (provaDesta) {
+    const dias = diasAte(provaDesta.data);
+    const label = dias < 0 ? `Prova passou há ${-dias} dia(s)` : dias === 0 ? 'PROVA É HOJE' : dias === 1 ? 'Prova amanhã' : `Prova em ${dias} dias`;
+    const cls = dias <= 2 && dias >= 0 ? 'urgent' : dias <= 7 && dias >= 0 ? 'warn' : '';
+    infoProva.innerHTML = `
+      <div class="hi-card ${cls}" style="margin:0;padding:14px;display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div class="hi-lbl">📅 ${label}</div>
+          <div style="font-size:0.8125rem;color:var(--ink2);margin-top:2px">${provaDesta.titulo || 'Prova'} · ${formatarData(provaDesta.data)}</div>
+        </div>
+        <button onclick="removerProva('${provaDesta.id}');abrirDisc('${d.id}')" class="li-x" style="font-size:1rem">✕</button>
+      </div>`;
+  } else {
+    infoProva.innerHTML = `
+      <button onclick="abrirAgendarProvaDesta('${d.id}')" class="menu-item" style="margin:0;width:100%">
+        <span class="ic">📅</span>
+        <div><div>Agendar prova</div><div class="mono">Acompanhe a data</div></div>
+      </button>`;
+  }
+
+  const secoes = [
+    { id:'resumos',    e:'📖', nm:'Resumos',    mt:`${nT} tópicos`,    c:'#3f5b7c' },
+    { id:'flashcards', e:'🃏', nm:'Flashcards', mt:`${nF} perguntas`,  c:'#8b6f4a' },
+    { id:'exercicios', e:'✏️', nm:'Exercícios', mt:`${nE} questões`,   c:'#2d6a4f' },
+    { id:'simulado',   e:'⏱️', nm:'Simulado',   mt:'Cronometrado',     c:'#c84b1a' },
+    { id:'vespera',    e:'🔥', nm:'Véspera da prova', mt:'Revisão intensa', c:'#b71c1c' },
+    { id:'video',      e:'🎥', nm:'Roteiro',    mt:`${nV} vídeos`,     c:'#d97757' },
+    { id:'podcast',    e:'🎙', nm:'Podcast',    mt:`${nP} episódios`,  c:'#7b4f8e' },
+  ];
+
+  document.getElementById('disc-secs').innerHTML = secoes.map(s => `
     <div class="sc" onclick="abrirSec('${s.id}')">
       <div style="display:flex;align-items:center;gap:14px">
-        <div class="sc-ic" style="background:${s.c}18">${s.e}</div>
-        <div><div style="font-size:18px;font-weight:700">${s.nm}</div><div style="font-family:var(--mono);font-size:10px;color:var(--ink3);margin-top:2px">${s.mt}</div></div>
+        <div class="sc-ic" style="background:${s.c}28;color:${s.c}">${s.e}</div>
+        <div><div style="font-size:1.125rem;font-weight:700">${s.nm}</div><div style="font-family:var(--mono);font-size:0.625rem;color:var(--ink3);margin-top:2px">${s.mt}</div></div>
       </div>
-      <span style="font-size:22px;color:var(--ink3)">›</span>
+      <span style="font-size:1.375rem;color:var(--ink3)">›</span>
     </div>`).join('');
   ir('disc');
 }
 
-// Abrir seção
 function abrirSec(id) {
   const jd = discAtual?.json_data || {};
   const cor = discAtual?.cor || 'var(--accent)';
 
   if (id === 'resumos') {
     const tops = jd.disciplina?.unidades?.flatMap(u=>u.topicos.map(t=>({...t,un:u.titulo})))||[];
-    document.getElementById('resumos-lst').innerHTML = tops.map(t=>`
-      <div class="rc" style="border-left:4px solid ${cor}">
+    document.getElementById('resumos-lst').innerHTML = tops.map(t=>{
+      const fav = ehFav('topicos', t.id);
+      return `
+      <div class="rc" style="border-left:4px solid ${cor}" onclick="marcarTopicoLido('${t.id}')">
+        <button class="fav ${fav?'on':''}" onclick="event.stopPropagation();toggleFav('topicos','${t.id}','${discAtual.id}','${esc2(t.nome)}');abrirSec('resumos')">${fav?'★':'☆'}</button>
         <div class="un">${t.un||''}</div>
         <div class="nm">${t.nome}</div>
         <div class="tx">${t.resumo||''}</div>
-        ${(t.pontosChave||[]).map(p=>`<div class="pk" style="--c:${cor}">${p}</div>`).join('')}
-      </div>`).join('');
+        ${(t.pontosChave||[]).map(p=>`<div class="pk">${p}</div>`).join('')}
+      </div>`;
+    }).join('');
     ir('resumos'); return;
   }
 
@@ -349,6 +768,15 @@ function abrirSec(id) {
     renderEX(); ir('ex'); return;
   }
 
+  if (id === 'simulado') {
+    if (!(jd.exercicios || []).length) { alert('Essa disciplina não tem exercícios para simulado.'); return; }
+    abrirModal('sim'); return;
+  }
+
+  if (id === 'vespera') {
+    renderVespera(); ir('vespera'); return;
+  }
+
   if (id === 'video') {
     document.getElementById('sc-titulo').textContent = 'Roteiro de Vídeo';
     renderScripts(jd.roteiro_video||[], cor); ir('scripts'); return;
@@ -360,7 +788,14 @@ function abrirSec(id) {
   }
 }
 
-// Flashcards
+function marcarTopicoLido(tid) {
+  if (!discAtual) return;
+  marcarTopico(discAtual.id, tid);
+}
+
+// ============================================================
+// FLASHCARDS (com favorito e progresso)
+// ============================================================
 function renderFC() {
   const cor = discAtual?.cor||'var(--accent)';
   const tot = FC.length, resp = Object.keys(fcR).length;
@@ -373,34 +808,43 @@ function renderFC() {
     document.getElementById('flash-cnt').innerHTML=`
       <div class="res-wrap">
         <div class="mono" style="margin-bottom:10px">resultado</div>
-        <div class="res-nota" style="color:${c}">${ok}<span style="font-size:28px;color:var(--ink3)">/${tot}</span></div>
-        <p style="font-size:17px;color:var(--ink2);margin:8px 0 24px">${pct>=80?'Excelente! Estás a dominar.':pct>=50?'Bom começo. Revisa os erros.':'Relê os resumos e tenta novamente.'}</p>
-        <button onclick="fcReset()" style="background:var(--ink);color:white;border:none;padding:13px 26px;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:0.15em;display:inline-flex;align-items:center;gap:8px;margin-bottom:12px">↺ Tentar novamente</button><br>
-        <button onclick="ir('disc')" style="background:transparent;color:var(--ink3);border:1px solid var(--ink3);padding:10px 22px;font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.15em;margin-top:8px">Voltar</button>
+        <div class="res-nota" style="color:${c}">${ok}<span style="font-size:1.75rem;color:var(--ink3)">/${tot}</span></div>
+        <p style="font-size:1.0625rem;color:var(--ink2);margin:8px 0 24px">${pct>=80?'Excelente! Estás a dominar.':pct>=50?'Bom começo. Revisa os erros.':'Relê os resumos e tenta novamente.'}</p>
+        <button onclick="fcReset()" style="background:var(--ink);color:var(--bg);border:none;padding:13px 26px;font-family:var(--mono);font-size:0.6875rem;text-transform:uppercase;letter-spacing:0.15em;display:inline-flex;align-items:center;gap:8px;margin-bottom:12px">↺ Tentar novamente</button><br>
+        <button onclick="ir('disc')" style="background:transparent;color:var(--ink3);border:1px solid var(--ink3);padding:10px 22px;font-family:var(--mono);font-size:0.625rem;text-transform:uppercase;letter-spacing:0.15em;margin-top:8px">Voltar</button>
       </div>`; return;
   }
 
   const fc = FC[fcI];
+  const fcId = `${discAtual.id}-fc-${fcI}`;
+  const fav = ehFav('flashcards', fcId);
   document.getElementById('flash-cnt').innerHTML=`
-    <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-family:var(--mono);font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:0.15em">
+    <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-family:var(--mono);font-size:0.625rem;color:var(--ink3);text-transform:uppercase;letter-spacing:0.15em">
       <span>${fcI+1} / ${tot}</span><span>${ok} ✓ · ${resp-ok} ✗</span>
     </div>
     <div class="bar"><div class="bar-f" style="width:${(resp/tot)*100}%;background:${cor}"></div></div>
     <div class="fc" style="border-color:${cor};background:${fcV?cor:'var(--bg)'};color:${fcV?'white':'var(--ink)'}" onclick="fcVirar()">
-      <div style="font-family:var(--mono);font-size:8px;text-transform:uppercase;letter-spacing:0.2em;opacity:0.5;margin-bottom:14px">${fcV?'resposta':'pergunta'} · toque para virar</div>
-      <div style="font-size:${fcV?'16px':'19px'};font-weight:${fcV?400:700};line-height:1.4">${fcV?fc.v:fc.f}</div>
+      <button class="fav ${fav?'on':''}" onclick="event.stopPropagation();toggleFav('flashcards','${fcId}','${discAtual.id}','${esc2(fc.f)}');renderFC()" style="color:${fcV?'white':'inherit'}">${fav?'★':'☆'}</button>
+      <div style="font-family:var(--mono);font-size:0.5rem;text-transform:uppercase;letter-spacing:0.2em;opacity:0.5;margin-bottom:14px">${fcV?'resposta':'pergunta'} · toque para virar</div>
+      <div style="font-size:${fcV?'1rem':'1.1875rem'};font-weight:${fcV?400:700};line-height:1.4">${fcV?fc.v:fc.f}</div>
     </div>
     ${fcV?`<div class="fc-btns">
       <button class="fc-btn" style="color:var(--red);border-color:var(--red);background:var(--bg)" onclick="fcResp('n')">✗ Não sabia</button>
       <button class="fc-btn" style="color:white;border-color:${cor};background:${cor}" onclick="fcResp('s')">✓ Sabia!</button>
-    </div>`:`<div style="text-align:center;font-family:var(--mono);font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:0.15em">Pense antes de virar</div>`}`;
+    </div>`:`<div style="text-align:center;font-family:var(--mono);font-size:0.625rem;color:var(--ink3);text-transform:uppercase;letter-spacing:0.15em">Pense antes de virar</div>`}`;
 }
 
 function fcVirar() { fcV=!fcV; renderFC(); }
-function fcResp(v) { fcR[fcI]=v; fcV=false; if(fcI<FC.length-1) fcI++; renderFC(); }
+function fcResp(v) {
+  fcR[fcI]=v;
+  if (discAtual) marcarFlash(discAtual.id, fcI, v === 's');
+  fcV=false; if(fcI<FC.length-1) fcI++; renderFC();
+}
 function fcReset() { fcI=0; fcV=false; fcR={}; renderFC(); }
 
-// Exercícios
+// ============================================================
+// EXERCÍCIOS (com favorito e progresso)
+// ============================================================
 function renderEX() {
   const cor = discAtual?.cor||'var(--accent)';
   const tot = EX.length;
@@ -408,36 +852,39 @@ function renderEX() {
 
   const resp = Object.keys(exR).length, ok = EX.filter((e,i)=>exR[i]===e.correta).length;
   const ex = EX[exI], reu = exR[exI]!==undefined, ac = exR[exI]===ex?.correta;
+  const exId = `${discAtual.id}-ex-${exI}`;
+  const fav = ehFav('exercicios', exId);
 
   const barra = `
-    <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-family:var(--mono);font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:0.15em">
+    <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-family:var(--mono);font-size:0.625rem;color:var(--ink3);text-transform:uppercase;letter-spacing:0.15em">
       <span>${exI+1} / ${tot}</span>
       ${resp===tot?`<span style="color:${ok>=tot*.7?'var(--green)':'var(--accent)'}">${ok}/${tot} corretas</span>`:''}
     </div>
-    <div class="bar" style="display:flex">
-      ${EX.map((_,i)=>{const r=exR[i],c=r===undefined?'transparent':r===EX[i].correta?'var(--green)':'var(--red)';return`<div style="flex:1;background:${c};transition:background 0.3s"></div>`;}).join('')}
+    <div class="bar" style="display:flex;gap:1px">
+      ${EX.map((_,i)=>{const r=exR[i],c=r===undefined?'var(--bg2)':r===EX[i].correta?'var(--green)':'var(--red)';return`<div style="flex:1;background:${c};transition:background 0.3s"></div>`;}).join('')}
     </div>`;
 
   const opts = (ex.opts||[]).map((o,oi)=>`
     <button class="op ${reu&&oi===ex.correta?'ok':reu&&oi===exR[exI]&&oi!==ex.correta?'err':''}"
       onclick="exResp(${oi})" ${reu?'disabled':''}>
-      <span style="font-family:var(--mono);font-size:9px;opacity:0.5;min-width:14px">${String.fromCharCode(65+oi)}</span>
+      <span style="font-family:var(--mono);font-size:0.5625rem;opacity:0.5;min-width:14px">${String.fromCharCode(65+oi)}</span>
       <span style="flex:1">${o}</span>
       ${reu&&oi===ex.correta?'<span style="margin-left:auto;color:var(--green)">✓</span>':''}
       ${reu&&oi===exR[exI]&&oi!==ex.correta?'<span style="margin-left:auto;color:var(--red)">✗</span>':''}
     </button>`).join('');
 
   const exp = reu&&ex.exp?`
-    <div class="ex-exp" style="border-top-color:${ac?'var(--green)':'var(--red)'};background:${ac?'rgba(45,106,79,0.06)':'rgba(183,28,28,0.05)'}">
-      <div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.15em;font-weight:700;color:${ac?'var(--green)':'var(--red)'};display:flex;align-items:center;gap:7px;margin-bottom:5px">
+    <div class="ex-exp" style="border-top-color:${ac?'var(--green)':'var(--red)'};background:${ac?'rgba(45,106,79,0.08)':'rgba(183,28,28,0.07)'}">
+      <div style="font-family:var(--mono);font-size:0.5625rem;text-transform:uppercase;letter-spacing:0.15em;font-weight:700;color:${ac?'var(--green)':'var(--red)'};display:flex;align-items:center;gap:7px;margin-bottom:5px">
         ${ac?'✓ Correto!':`✗ Incorreto · Correta: ${String.fromCharCode(65+ex.correta)}`}
       </div>
-      <div style="font-size:14px;line-height:1.6;color:var(--ink)">${ex.exp}</div>
+      <div style="font-size:0.875rem;line-height:1.6;color:var(--ink)">${ex.exp}</div>
     </div>`:'' ;
 
   document.getElementById('ex-cnt').innerHTML=`
     ${barra}
     <div class="ex">
+      <button class="fav ${fav?'on':''}" onclick="toggleFav('exercicios','${exId}','${discAtual.id}','${esc2(ex.q)}');renderEX()">${fav?'★':'☆'}</button>
       <div class="ex-h">
         ${ex.topico?`<div class="ex-tp">${ex.topico}</div>`:''}
         <div class="ex-q">${ex.q}</div>
@@ -451,19 +898,358 @@ function renderEX() {
     </div>`;
 }
 
-function exResp(o) { if(exR[exI]!==undefined)return; exR[exI]=o; renderEX(); }
+function exResp(o) {
+  if(exR[exI]!==undefined)return;
+  exR[exI]=o;
+  if (discAtual) marcarEx(discAtual.id, exI, o === EX[exI].correta);
+  renderEX();
+}
 function exNav(d) { exI=Math.max(0,Math.min(EX.length-1,exI+d)); renderEX(); }
 function exReset() { exI=0; exR={}; renderEX(); }
 
-// Scripts
+// ============================================================
+// SIMULADO CRONOMETRADO
+// ============================================================
+function setSimQ(n) { SIM.totalQ = n; document.querySelectorAll('.sim-q').forEach(b => b.classList.toggle('on', +b.dataset.q === n)); }
+function setSimT(n) { SIM.totalMin = n; document.querySelectorAll('.sim-t').forEach(b => b.classList.toggle('on', +b.dataset.t === n)); }
+
+function iniciarSimulado() {
+  fecharModal('sim');
+  const jd = discAtual?.json_data || {};
+  const todos = (jd.exercicios || []).slice();
+  if (!todos.length) { alert('Sem exercícios.'); return; }
+
+  // Embaralhar e pegar N
+  for (let i = todos.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [todos[i], todos[j]] = [todos[j], todos[i]];
+  }
+  SIM.questoes = todos.slice(0, Math.min(SIM.totalQ, todos.length));
+  SIM.ativo = true;
+  SIM.i = 0;
+  SIM.respostas = {};
+  SIM.discId = discAtual.id;
+  SIM.fim = Date.now() + SIM.totalMin * 60 * 1000;
+  SIM.inicio = Date.now();
+
+  if (SIM.timerId) clearInterval(SIM.timerId);
+  SIM.timerId = setInterval(tickSimulado, 1000);
+
+  ir('simulado');
+  renderSimulado();
+}
+
+function tickSimulado() {
+  if (!SIM.ativo) return;
+  const restante = Math.max(0, SIM.fim - Date.now());
+  if (restante <= 0) {
+    finalizarSimulado(true);
+    return;
+  }
+  const el = document.getElementById('sim-timer');
+  if (el) {
+    const min = Math.floor(restante / 60000);
+    const seg = Math.floor((restante % 60000) / 1000);
+    el.textContent = `${String(min).padStart(2,'0')}:${String(seg).padStart(2,'0')}`;
+    el.classList.toggle('warn', restante < 120000 && restante >= 60000);
+    el.classList.toggle('crit', restante < 60000);
+  }
+}
+
+function renderSimulado() {
+  if (!SIM.ativo) return;
+  const cor = discAtual?.cor || 'var(--accent)';
+  const tot = SIM.questoes.length;
+  const q = SIM.questoes[SIM.i];
+  const respondida = SIM.respostas[SIM.i] !== undefined;
+
+  const opts = (q.opts || []).map((o, oi) => `
+    <button class="op ${respondida && oi === SIM.respostas[SIM.i] ? 'ok' : ''}"
+      onclick="simResp(${oi})">
+      <span style="font-family:var(--mono);font-size:0.5625rem;opacity:0.5;min-width:14px">${String.fromCharCode(65+oi)}</span>
+      <span style="flex:1">${o}</span>
+    </button>`).join('');
+
+  document.getElementById('sim-cnt').innerHTML = `
+    <div class="timer-box">
+      <div>
+        <div class="mono">Simulado · ${SIM.i+1}/${tot}</div>
+        <div style="font-size:0.75rem;color:var(--ink3);margin-top:2px">${Object.keys(SIM.respostas).length} respondidas</div>
+      </div>
+      <div id="sim-timer" class="timer-val">00:00</div>
+    </div>
+
+    <div class="bar" style="display:flex;gap:1px">
+      ${SIM.questoes.map((_,i)=>{const r=SIM.respostas[i];return`<div style="flex:1;background:${r===undefined?'var(--bg2)':cor};transition:background 0.3s"></div>`}).join('')}
+    </div>
+
+    <div class="ex" style="margin-top:16px">
+      <div class="ex-h" style="padding-right:16px">
+        ${q.topico?`<div class="ex-tp">${q.topico}</div>`:''}
+        <div class="ex-q">${q.q}</div>
+      </div>
+      <div class="ex-opts">${opts}</div>
+    </div>
+
+    <div class="ex-nav" style="margin-top:12px">
+      <button class="bn" onclick="simNav(-1)" ${SIM.i===0?'disabled':''}>← Anterior</button>
+      ${SIM.i<tot-1?`<button class="bn pr" onclick="simNav(1)">Próxima →</button>`:`<button class="bn pr" onclick="finalizarSimulado(false)" style="background:var(--green);border-color:var(--green)">✓ Finalizar</button>`}
+    </div>
+
+    <p style="text-align:center;margin-top:20px;font-family:var(--mono);font-size:0.625rem;color:var(--ink3);text-transform:uppercase;letter-spacing:0.12em">Sem feedback durante o simulado</p>
+  `;
+  tickSimulado();
+}
+
+function simResp(o) { SIM.respostas[SIM.i] = o; renderSimulado(); }
+function simNav(d) { SIM.i = Math.max(0, Math.min(SIM.questoes.length-1, SIM.i + d)); renderSimulado(); }
+
+function sairSimulado() {
+  if (SIM.ativo && !confirm('Sair do simulado? O progresso atual será descartado.')) return;
+  if (SIM.timerId) clearInterval(SIM.timerId);
+  SIM.ativo = false;
+  ir('disc');
+}
+
+function finalizarSimulado(tempoEsgotou) {
+  if (!SIM.ativo) return;
+  if (SIM.timerId) clearInterval(SIM.timerId);
+  SIM.ativo = false;
+
+  const acertos = SIM.questoes.filter((q, i) => SIM.respostas[i] === q.correta).length;
+  const total = SIM.questoes.length;
+  const tempoSeg = Math.floor((Date.now() - SIM.inicio) / 1000);
+
+  // Salvar no histórico
+  const reg = {
+    id: 't' + Date.now(),
+    timestamp: Date.now(),
+    discId: SIM.discId,
+    acertos,
+    total,
+    tempoSeg,
+    tempoLimite: SIM.totalMin * 60,
+    tempoEsgotou
+  };
+  historico.unshift(reg);
+  if (historico.length > 50) historico = historico.slice(0, 50);
+  localStorage.setItem('ib_historico', JSON.stringify(historico));
+
+  // Render resultado
+  const pct = Math.round((acertos / total) * 100);
+  const cor = pct >= 70 ? 'var(--green)' : pct >= 50 ? 'var(--accent)' : 'var(--red)';
+  const min = Math.floor(tempoSeg / 60);
+  const seg = tempoSeg % 60;
+  const disc = discs.find(d => d.id === SIM.discId);
+
+  document.getElementById('sim-cnt').innerHTML = `
+    <div class="res-wrap">
+      ${tempoEsgotou ? '<div class="mono" style="color:var(--red);margin-bottom:10px">⏱ tempo esgotado</div>' : '<div class="mono" style="margin-bottom:10px">resultado</div>'}
+      <div class="res-nota" style="color:${cor}">${acertos}<span style="font-size:1.75rem;color:var(--ink3)">/${total}</span></div>
+      <div style="font-family:var(--mono);font-size:1.125rem;color:var(--ink2);margin:8px 0">${pct}%</div>
+      <p style="font-size:1.0625rem;color:var(--ink2);margin:6px 0 4px">${disc ? disc.sigla : ''}</p>
+      <p style="font-family:var(--mono);font-size:0.6875rem;color:var(--ink3);margin-bottom:24px">Tempo: ${String(min).padStart(2,'0')}:${String(seg).padStart(2,'0')}</p>
+
+      <button onclick="iniciarSimulado()" style="background:var(--accent);color:white;border:none;padding:13px 26px;font-family:var(--mono);font-size:0.6875rem;text-transform:uppercase;letter-spacing:0.15em;display:inline-flex;align-items:center;gap:8px;margin-bottom:12px">↺ Novo simulado</button><br>
+      <button onclick="ir('historico');renderHistorico()" style="background:transparent;color:var(--ink3);border:1px solid var(--ink3);padding:10px 22px;font-family:var(--mono);font-size:0.625rem;text-transform:uppercase;letter-spacing:0.15em;margin-top:4px">Ver histórico</button>
+      <br><button onclick="ir('disc')" style="background:transparent;color:var(--ink3);border:none;padding:12px 22px;font-family:var(--mono);font-size:0.625rem;text-transform:uppercase;letter-spacing:0.15em;margin-top:8px">Voltar</button>
+    </div>
+  `;
+}
+
+// ============================================================
+// HISTÓRICO DE SIMULADOS
+// ============================================================
+function renderHistorico() {
+  const el = document.getElementById('hist-cnt');
+  if (!historico.length) {
+    el.innerHTML = '<p style="color:var(--ink2);font-size:0.9375rem;text-align:center;padding:40px">Nenhum simulado feito ainda.</p>';
+    return;
+  }
+  el.innerHTML = historico.map(h => {
+    const disc = discs.find(d => d.id === h.discId);
+    const pct = Math.round((h.acertos / h.total) * 100);
+    const cor = pct >= 70 ? 'var(--green)' : pct >= 50 ? 'var(--accent)' : 'var(--red)';
+    const min = Math.floor(h.tempoSeg / 60);
+    const seg = h.tempoSeg % 60;
+    return `
+      <div class="li" style="border-left:4px solid ${cor}">
+        <div style="flex:1">
+          <div class="nm">${h.acertos}/${h.total} · ${pct}%</div>
+          <div class="mt">${disc ? disc.sigla + ' · ' : ''}${tempoRelativo(h.timestamp)} · ${String(min).padStart(2,'0')}:${String(seg).padStart(2,'0')}${h.tempoEsgotou?' · esgotou':''}</div>
+        </div>
+        <button class="li-x" onclick="removerHistorico('${h.id}')">✕</button>
+      </div>`;
+  }).join('');
+}
+function removerHistorico(id) {
+  historico = historico.filter(h => h.id !== id);
+  localStorage.setItem('ib_historico', JSON.stringify(historico));
+  renderHistorico();
+}
+
+// ============================================================
+// CRONOGRAMA DE PROVAS
+// ============================================================
+function provasOrdenadas() {
+  return [...provas].sort((a,b) => new Date(a.data) - new Date(b.data))
+    .filter(p => diasAte(p.data) >= -7); // remove provas muito antigas
+}
+function diasAte(dataStr) {
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  const alvo = new Date(dataStr + 'T00:00:00');
+  return Math.ceil((alvo - hoje) / (1000 * 60 * 60 * 24));
+}
+function formatarData(d) {
+  const [a,m,di] = d.split('-');
+  return `${di}/${m}/${a}`;
+}
+function tempoRelativo(ts) {
+  const s = Math.floor((Date.now() - ts) / 1000);
+  if (s < 60) return 'agora';
+  if (s < 3600) return `há ${Math.floor(s/60)} min`;
+  if (s < 86400) return `há ${Math.floor(s/3600)}h`;
+  if (s < 86400*7) return `há ${Math.floor(s/86400)}d`;
+  const d = new Date(ts);
+  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`;
+}
+
+function abrirAgendarProva() {
+  const sel = document.getElementById('pr-disc');
+  sel.innerHTML = discs.map(d => `<option value="${d.id}">${d.sigla} — ${d.nome}</option>`).join('');
+  document.getElementById('pr-data').value = '';
+  document.getElementById('pr-tit').value = '';
+  abrirModal('prova');
+}
+function abrirAgendarProvaDesta(discId) {
+  abrirAgendarProva();
+  document.getElementById('pr-disc').value = discId;
+}
+function salvarProva() {
+  const discId = document.getElementById('pr-disc').value;
+  const data = document.getElementById('pr-data').value;
+  const tit = document.getElementById('pr-tit').value.trim();
+  if (!data) { alert('Escolhe uma data.'); return; }
+  // Remove prova anterior da mesma disciplina (1 prova por disciplina)
+  provas = provas.filter(p => p.discId !== discId);
+  provas.push({ id: 'p' + Date.now(), discId, data, titulo: tit });
+  localStorage.setItem('ib_provas', JSON.stringify(provas));
+  fecharModal('prova');
+  // Atualiza tela atual
+  if (document.getElementById('pg-provas').style.display !== 'none') renderProvas();
+  if (document.getElementById('pg-disc').style.display !== 'none' && discAtual) abrirDisc(discAtual.id);
+  if (document.getElementById('pg-inicio').style.display !== 'none') renderInicio();
+}
+function removerProva(id) {
+  provas = provas.filter(p => p.id !== id);
+  localStorage.setItem('ib_provas', JSON.stringify(provas));
+  if (document.getElementById('pg-provas').style.display !== 'none') renderProvas();
+  if (document.getElementById('pg-inicio').style.display !== 'none') renderInicio();
+}
+function renderProvas() {
+  const el = document.getElementById('provas-lst');
+  const lista = provasOrdenadas();
+  if (!lista.length) {
+    el.innerHTML = '<p style="color:var(--ink2);font-size:0.9375rem;text-align:center;padding:30px">Sem provas agendadas.</p>';
+    return;
+  }
+  el.innerHTML = lista.map(p => {
+    const disc = discs.find(d => d.id === p.discId);
+    const dias = diasAte(p.data);
+    const cor = dias <= 2 ? 'var(--red)' : dias <= 7 ? 'var(--amber)' : 'var(--ink)';
+    const label = dias < 0 ? `há ${-dias}d` : dias === 0 ? 'HOJE' : dias === 1 ? 'AMANHÃ' : `${dias}d`;
+    return `
+      <div class="cd-box" style="border-color:${cor}">
+        <div style="flex:1">
+          <div class="mono" style="margin-bottom:4px">${disc ? disc.sigla : '?'} · ${formatarData(p.data)}</div>
+          <div style="font-size:1rem;font-weight:700">${p.titulo || (disc ? disc.nome : 'Prova')}</div>
+        </div>
+        <div style="text-align:right">
+          <div class="cd-num" style="color:${cor}">${label}</div>
+          <button class="li-x" onclick="removerProva('${p.id}')" style="margin-top:4px">✕ Remover</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ============================================================
+// MODO VÉSPERA DA PROVA
+// ============================================================
+function renderVespera() {
+  const jd = discAtual?.json_data || {};
+  const cor = discAtual?.cor || 'var(--accent)';
+  const tops = jd.disciplina?.unidades?.flatMap(u=>u.topicos.map(t=>({...t,un:u.titulo})))||[];
+  const flash = jd.flashcards || [];
+  const exs = jd.exercicios || [];
+
+  // Pega 5 exercícios aleatórios
+  const exsEmb = exs.slice();
+  for (let i = exsEmb.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [exsEmb[i], exsEmb[j]] = [exsEmb[j], exsEmb[i]];
+  }
+  const exsTop = exsEmb.slice(0, 5);
+
+  const p = provas.find(pr => pr.discId === discAtual.id);
+  const dias = p ? diasAte(p.data) : null;
+  const bannerProva = p ? `
+    <div class="hi-card ${dias<=1?'urgent':'warn'}" style="margin-bottom:20px">
+      <div class="ic-big">🔥</div>
+      <div class="hi-lbl">Prova</div>
+      <div class="hi-val">${dias < 0 ? `passou há ${-dias}d` : dias === 0 ? 'HOJE!' : dias === 1 ? 'AMANHÃ' : `em ${dias} dias`}</div>
+      <div class="hi-sub">${formatarData(p.data)}${p.titulo?' · '+p.titulo:''}</div>
+    </div>` : '';
+
+  document.getElementById('vs-cnt').innerHTML = `
+    <h2 style="margin-bottom:8px">🔥 Véspera de prova</h2>
+    <p style="font-size:0.9375rem;color:var(--ink2);margin-bottom:20px">Revisão intensa e condensada. Tudo o essencial num só lugar.</p>
+
+    ${bannerProva}
+
+    <h3 style="font-size:1.125rem;font-weight:700;margin-bottom:12px">📖 Pontos-chave</h3>
+    ${tops.map(t => `
+      <div class="vs-item" style="border-color:${cor}">
+        <div class="nm">${t.nome}</div>
+        <div class="tx">${t.resumo || ''}</div>
+        ${(t.pontosChave||[]).map(pk=>`<div class="pk" style="margin-top:4px">${pk}</div>`).join('')}
+      </div>`).join('')}
+
+    <h3 style="font-size:1.125rem;font-weight:700;margin:28px 0 12px">🃏 Flashcards rápidos</h3>
+    ${flash.slice(0, 8).map(f => `
+      <div class="vs-item" style="border-color:${cor}">
+        <div style="font-family:var(--mono);font-size:0.625rem;color:var(--ink3);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:4px">pergunta</div>
+        <div class="nm" style="margin-bottom:6px">${f.f}</div>
+        <div style="font-family:var(--mono);font-size:0.625rem;color:var(--ink3);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:4px">resposta</div>
+        <div class="tx">${f.v}</div>
+      </div>`).join('')}
+
+    <h3 style="font-size:1.125rem;font-weight:700;margin:28px 0 12px">✏️ 5 Questões de revisão</h3>
+    ${exsTop.map((e,i) => `
+      <div class="vs-item" style="border-color:${cor}">
+        <div style="font-family:var(--mono);font-size:0.625rem;color:var(--ink3);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:6px">questão ${i+1}${e.topico?' · '+e.topico:''}</div>
+        <div class="nm" style="margin-bottom:8px">${e.q}</div>
+        ${(e.opts||[]).map((o,oi)=>`<div style="padding:4px 0;font-size:0.8125rem;${oi===e.correta?'color:var(--green);font-weight:700':''}">${String.fromCharCode(65+oi)}) ${o}${oi===e.correta?' ✓':''}</div>`).join('')}
+        ${e.exp?`<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--bg2);font-size:0.8125rem;color:var(--ink2);font-style:italic">${e.exp}</div>`:''}
+      </div>`).join('')}
+
+    <div style="text-align:center;padding:30px 0;border-top:1px solid var(--bg2);margin-top:24px">
+      <p style="font-size:1rem;color:var(--ink2);margin-bottom:14px">Respira fundo. Você vai arrasar. 💪</p>
+      <button onclick="window.print()" style="background:var(--ink);color:var(--bg);border:none;padding:11px 22px;font-family:var(--mono);font-size:0.625rem;text-transform:uppercase;letter-spacing:0.15em">🖨 Imprimir</button>
+    </div>
+  `;
+}
+
+// ============================================================
+// SCRIPTS (vídeo / podcast)
+// ============================================================
 function renderScripts(itens, cor) {
   document.getElementById('sc-lst').innerHTML = !itens.length
     ? '<p style="color:var(--ink2)">Nenhum conteúdo disponível.</p>'
     : itens.map((s,i)=>`
         <div class="scard">
           <div class="sh" style="background:${cor}">
-            <strong style="font-size:15px">${s.unidade}</strong>
-            <button onclick="cp('sc${i}')" style="border:1px solid rgba(255,255,255,0.3);background:transparent;color:white;padding:5px 12px;font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.12em">📋 Copiar</button>
+            <strong style="font-size:0.9375rem">${s.unidade}</strong>
+            <button onclick="cp('sc${i}')" style="border:1px solid rgba(255,255,255,0.3);background:transparent;color:white;padding:5px 12px;font-family:var(--mono);font-size:0.5625rem;text-transform:uppercase;letter-spacing:0.12em">📋 Copiar</button>
           </div>
           <pre class="sb-pre" id="sc${i}">${esc(s.script)}</pre>
         </div>`).join('');
@@ -471,15 +1257,17 @@ function renderScripts(itens, cor) {
 
 function cp(id) { const el=document.getElementById(id); if(el) navigator.clipboard.writeText(el.textContent); }
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function esc2(s) { return String(s||'').replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
 
-// Admin
+// ============================================================
+// ADMIN
+// ============================================================
 function abrirAdmin() {
   document.getElementById('a-url').value = SB_URL;
   document.getElementById('a-key').value = SB_KEY;
   document.getElementById('a-msg').textContent = '';
-  document.getElementById('ov').classList.add('on');
+  abrirModal('adm');
 }
-function fecharAdmin() { document.getElementById('ov').classList.remove('on'); }
 
 async function salvarAdmin() {
   const url = document.getElementById('a-url').value.trim();
@@ -496,7 +1284,7 @@ async function salvarAdmin() {
       SB_URL=url; SB_KEY=key;
       localStorage.setItem('ib_url',url); localStorage.setItem('ib_key',key);
       msg.textContent='✓ Ligação ok! A carregar...'; msg.style.color='var(--green)';
-      setTimeout(()=>{ fecharAdmin(); carregar(); },1000);
+      setTimeout(()=>{ fecharModal('adm'); carregar(); },1000);
     } else {
       msg.textContent='Erro: '+(data?.message||JSON.stringify(data).slice(0,100)); msg.style.color='var(--red)';
     }
